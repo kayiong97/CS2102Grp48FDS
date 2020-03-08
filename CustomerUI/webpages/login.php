@@ -1,3 +1,18 @@
+<?php
+			$link = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=password");
+			$query = " SELECT * FROM customers;";
+			$res = pg_query($link,$query);
+	
+			echo "<table>";
+
+			while ($row = pg_fetch_row($res)) {
+			  echo "Customer Name: $row[0]  Area: $row[1]   ";
+			  echo "<br />\n";
+			}
+
+
+		?>
+
 <!DOCTYPE html>
 <html>
 <head>
