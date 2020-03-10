@@ -1,4 +1,19 @@
-﻿<!DOCTYPE html>
+﻿<?php
+    session_start();
+
+    if ( isset( $_SESSION["username"] ) )
+    {
+        // echo "Hi " + $_SESSION['username'] + " . Welcome!";
+        // echo $_SESSION["username"];
+    }
+    else
+    {
+        header('Location: /cs2102proj/CustomerUI/webpages/login.php');
+    }
+
+?>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -61,7 +76,16 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#">Call Now! <i class="fa fa-phone"></i> 010 020 0340</a></li>
-                    <a href="login.html" class="section-btn">Login</a>
+                    
+                    <a href="login.html" class="section-btn" id="navLogin" 
+                    <?php 
+                    if( isset( $_SESSION["username"] ) ){ 
+                    echo 'style="display:none;"'; 
+                    }else{ 
+                    echo 'style="display:inline-block;"';
+                    } 
+                    ?>>
+                    Login</a> 
                 </ul>
             </div>
 

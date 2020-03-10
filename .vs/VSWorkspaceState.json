@@ -1,7 +1,13 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\AdminUI",
+    "\\AdminUI\\docs",
+    "\\AdminUI\\webpages",
+    "\\CustomerUI",
+    "\\CustomerUI\\assets",
+    "\\CustomerUI\\webpages"
   ],
-  "SelectedNode": "\\index.html",
+  "SelectedNode": "\\config.php",
   "PreviewInSolutionExplorer": false
 }
