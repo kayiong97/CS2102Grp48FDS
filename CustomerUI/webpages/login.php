@@ -21,20 +21,15 @@
 
 	$res = pg_query($link, $query);
 
-	echo "<table>";
-
 	while ($row = pg_fetch_row($res)) {
 		if ($row[0] == $username && $row[1] == $password) {
 			$_SESSION["username"] = $username;
 			
 			echo "Hi " + $username + " . Welcome!";
-			header('Location: /cs2102proj/CustomerUI/webpages/index.php');
+			header('Location: /cs2102projPHP/CustomerUI/webpages/index.php');
 		} else
 			echo "Sorry, you have entered incorrect username/password.";
 	}
-	
-	
-
 ?>
 
 <!DOCTYPE html>

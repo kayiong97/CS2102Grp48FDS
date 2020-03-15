@@ -1,21 +1,51 @@
 ﻿<?php
-    session_start();
-    
-    // $buttons = "";
-    if ( !empty( $_SESSION["username"] ) )
-    {
-        // echo "Hi " + $_SESSION['username'] + " . Welcome!";
-        // echo $_SESSION["username"];
-        
-        // echo <a href="#">Hi, $_SESSION["username"]</a>;
-        // $buttons = "<input type='button' id='loginhide' value='View Account Profile' >";
-    }
-    else
-    {
-        // $buttons = "<input type='button' id='loginhide' value='Login' >";
-        // header('Location: /cs2102proj/CustomerUI/webpages/login.php');
-    }
+  
+  session_start();
+	
+    $username = $_SESSION["username"];
+	$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=password");
 
+	$query = "SELECT u.username, c.accumulatedPoints, u.name, u.contactNo FROM customers c JOIN users u on c.customer_id = u.user_id WHERE u.username = '$username';";
+
+	$res = pg_query($link, $query);
+
+	while ($row = pg_fetch_row($res)) {
+		if ($row[0] == $username) {
+			// $_SESSION["username"] = $username;
+            
+            $accumulatedPoints = $row[1];
+			$_SESSION["accumulatedPoints"] = $accumulatedPoints;
+            
+            $name = $row[2];
+			$_SESSION["name"] = $name;
+            
+            $contactNo = $row[3];
+			$_SESSION["contactNo"] = $contactNo;
+            
+		} else {
+			// echo "Sorry, no result found.";
+        }
+	}
+    
+    // $query2 = "select deliverylocations from delivery d 
+    // JOIN stores s on s.delivery_id = d.delivery_id 
+    // JOIN customers c on s.customer_id = c.customer_id 
+    // JOIN users u on u.user_id = c.user_id 
+    // WHERE u.username = '$username' 
+    // ORDER BY d.orderedTimestamp DESC LIMIT 5;";
+    // $res2 = pg_query($link, $query2);
+
+	// echo "<table>";
+
+	// while ($row = pg_fetch_row($res2)) {
+		
+            // $deliveryLocations = $row[0];
+			// $_SESSION["deliveryLocations"] = $deliveryLocations;
+            
+            // echo "hi    '$deliveryLocations'    <br/>";
+            
+		// }
+	
 ?>
 
 <!DOCTYPE html>
@@ -102,7 +132,7 @@
                     ?>>
                     Login</a> 
                     
-                      <a href="login.php" class="section-btn" id="navLogout" 
+                    <a href="login.php" class="section-btn" id="navLogout" 
                     <?php 
                     if( isset( $_SESSION["username"] ) ){ 
                     echo 'style="display:inline-block;"'; 
@@ -122,17 +152,42 @@
     <section id="home" class="slider" data-stellar-background-ratio="0.5">
         <div class="row">
 
-            <div class="owl-carousel owl-theme">
-                <div class="item item-first">
-                    <div class="caption">
+            <div class="owl-carousel owl-theme" >
+                <div class="item item-first" >
+                    <div class="caption" >
                         <div class="container">
                             <div class="col-md-8 col-sm-12">
-                                <h3>PORT's Food Delivery Service</h3>
-                                <h1>Our mission is to provide an unforgettable experience</h1>
+                                <h1>Hi, <b> <?php echo($_SESSION["username"]);?> </b></h1>
+                                </br>
+                                <h3>Name: <u style="margin-left:19%;"> <?php echo($_SESSION["name"] );?> </u></h3>
+                                </br>
+                                <h3>Contact No: <u style="margin-left:10%;"> <?php echo($_SESSION["contactNo"] );?> </u></h3>
+                                <br/>
+                                <h3>Membership Points: <u style="margin-left:0%;"> <?php echo($_SESSION["accumulatedPoints"]);?> </u></h3>
+                                <br/>
+                                <h3>Delivery Locations: <u style="margin-left:20%;"> 
+                                <?php
+                                
+	$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=password");
+    
+    $query2 = "select deliverylocations from delivery d 
+    JOIN stores s on s.delivery_id = d.delivery_id 
+    JOIN customers c on s.customer_id = c.customer_id 
+    JOIN users u on u.user_id = c.user_id 
+    WHERE u.username = '$username' 
+    ORDER BY d.orderedTimestamp DESC LIMIT 5;";
+    $res2 = pg_query($link, $query2);
 
-                                <input type="text" placeholder="Enter postal code" class="section-btn btn btn-default smoothScroll" style="background: white" />
-
-                                <a href="#team" class="section-btn btn btn-default smoothScroll">Search</a>
+	while ($row = pg_fetch_row($res2)) {
+		
+            $deliveryLocations = $row[0];
+			$_SESSION["deliveryLocations"] = $deliveryLocations;
+            
+            echo "<br/> $deliveryLocations <br/>";
+            
+		}
+                                
+    ?></u></h3>
                             </div>
                         </div>
                     </div>
