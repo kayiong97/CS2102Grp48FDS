@@ -116,7 +116,41 @@
             </div>
         </section>
 
-        <<!-- View Account Profile -->
+<style>
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+  font-family: arial;
+  padding: 5px;
+  min-width: 300px;
+
+}
+
+.price {
+  color: grey;
+  font-size: 22px;
+}
+
+.card button {
+  border: none;
+  outline: 0;
+  padding: 12px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+}
+
+.card button:hover {
+  opacity: 0.7;
+}
+
+</style>
+        <!-- View Account Profile -->
             <section id="about" data-stellar-background-ratio="0.5">
 
                 <div class="container">
@@ -125,15 +159,47 @@
 
                         <div class="col-md-6 col-sm-12">
                             <div class="about-info">
-                                <div>INSERT CONTENT HERE</div>
-                            </div>
-                        </div>
+                                <!--<div>INSERT CONTENT HERE</div>-->
+                                
+            <!--                    <div class="card">
+  <img src="jeans3.jpg" alt="Denim Jeans" style="width:100%">
+  <h1>Tailored Jeans</h1>
+  <p class="price">$19.99</p>
+  <p>Some text about the jeans..</p>
+  <p><button>Add to Cart</button></p>
+  </div>
+  -->
 
-                        <div class="col-md-6 col-sm-12">
-                            <div class="wow fadeInUp about-image" data-wow-delay="0.6s">
-                                <img src="../assets/images/about-image.jpg" class="img-responsive" alt="">
+
+                                <?php
+
+	$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+
+    $query = "SELECT distinct category FROM restaurantFood ORDER BY category ASC;";
+    $res = pg_query($link, $query);
+    
+    echo "<table>";
+    echo "<tr>";
+	while ($row = pg_fetch_row($res)) {
+
+            $categories = $row[0];
+                        
+            
+            echo "<td><div class='card'>
+            <img src='/cs2102grp48fds/CustomerUI/assets/images/categories/$categories.jpg' alt='$categories' style='width: 100%; height: 200px;'>
+            <h1><a href='#$categories'>$categories</a></h1>
+            <p><button>Click to view restaurants</button></p>
+            </div></td>";
+            
+		}
+    echo "</tr>";
+    echo "</table>";
+
+    ?>
+    
                             </div>
                         </div>
+    
 
                     </div>
                 </div>
