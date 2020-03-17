@@ -46,6 +46,28 @@ CREATE TABLE delivery (
 	PRIMARY KEY (delivery_id)
 );
 
+CREATE TABLE restaurant (
+	restaurant_id integer,
+	name varchar(100),
+	contactNo varchar(20),
+	address varchar (200),
+	area varchar (100),
+	minMonetaryAmount integer,
+	PRIMARY KEY (restaurant_id)
+);
+
+CREATE TABLE restaurantFood (
+	food_id integer,
+	price FLOAT,
+	name varchar(100),
+	category varchar(100),
+	information varchar(500),
+	availabilityStatus BOOLEAN DEFAULT FALSE,
+	restaurant_id integer,
+	PRIMARY KEY (food_id, restaurant_id),
+	FOREIGN KEY (restaurant_id) REFERENCES restaurant ON DELETE CASCADE
+);
+
 INSERT INTO users(user_id, name, username, password, contactNo) values(1, 'Lee Xiao Long', 'leexl', 'password', '81110111');
 INSERT INTO users(user_id, name, username, password, contactNo) values(2, 'Lee Xiao Bin', 'leexb', 'password', '81110112');
 INSERT INTO users(user_id, name, username, password, contactNo) values(3, 'Lee Xiao Kun', 'leexk', 'password', '81110113');
