@@ -23,6 +23,16 @@ CREATE TABLE customers (
 	FOREIGN KEY (user_id) REFERENCES users
 );
 
+CREATE TABLE admin (
+	admin_id integer GENERATED ALWAYS AS IDENTITY,
+	aName varchar(50) NOT NULL,
+	aUsername varchar(100) NOT NULL,
+	aPassword varchar(100) NOT NULL,
+	aContactNo varchar(8) NOT NULL,
+    aRole integer NOT NULL,
+	PRIMARY KEY (admin_id)
+);
+
 CREATE TABLE orders (
 	order_id integer,
 	totalOrderCost decimal,

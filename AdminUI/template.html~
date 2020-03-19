@@ -35,31 +35,13 @@
           <li class="nav-item active  ">
             <a class="nav-link" href="#0">
               <i class="material-icons">dashboard</i>
-              <p>Admin</p>
+              <p>Dashboard</p>
             </a>
           </li>
 	  <li class="nav-item active  ">
             <a class="nav-link" href="#0">
               <i class="material-icons">dashboard</i>
-              <p>Rider</p>
-            </a>
-          </li>
-	  <li class="nav-item active  ">
-            <a class="nav-link" href="#0">
-              <i class="material-icons">dashboard</i>
-              <p>Restaurant</p>
-            </a>
-          </li>
-	  <li class="nav-item active  ">
-            <a class="nav-link" href="#0">
-              <i class="material-icons">dashboard</i>
-              <p>Customer Order</p>
-            </a>
-          </li>
-	  <li class="nav-item active  ">
-            <a class="nav-link" href="#0">
-              <i class="material-icons">dashboard</i>
-              <p>FDS Manager</p>
+              <p>Testing</p>
             </a>
           </li>
           <!-- your sidebar here -->
