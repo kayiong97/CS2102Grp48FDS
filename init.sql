@@ -3,6 +3,8 @@ DROP TABLE IF EXISTS customers CASCADE;
 DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS stores CASCADE;
 DROP TABLE IF EXISTS delivery CASCADE;
+DROP TABLE IF EXISTS restaurant CASCADE;
+
 
 CREATE TABLE users (
 	user_id integer,
@@ -49,7 +51,7 @@ CREATE TABLE delivery (
 CREATE TABLE restaurant (
 	restaurant_id integer,
 	name varchar(100),
-	contactNo varchar(20),
+	contactNo varchar(100),
 	address varchar (200),
 	area varchar (100),
 	minMonetaryAmount integer,
