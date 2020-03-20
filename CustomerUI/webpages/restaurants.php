@@ -116,6 +116,40 @@
             </div>
         </section>
 
+<style>
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+  // font-family: arial;
+  padding: 5px;
+  min-width: 300px;
+
+}
+
+.price {
+  color: grey;
+  font-size: 22px;
+}
+
+.card input[type=submit] {
+  border: none;
+  outline: 0;
+  padding: 12px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+}
+
+.card button:hover {
+  opacity: 0.7;
+}
+</style>
+
         <<!-- Restaurants -->
             <section id="about" data-stellar-background-ratio="0.5">
 
@@ -125,15 +159,49 @@
 
                         <div class="col-md-6 col-sm-12">
                             <div class="about-info">
-                                <div>INSERT CONTENT HERE</div>
+                                <?php
+                                
+                                if($_POST){
+    if(isset($_POST['btnViewFoodBasedOnRestaurant'])){
+        $restaurantName = $_POST["btnViewFoodBasedOnRestaurant"];
+        $_SESSION["viewFoodByRestaurantName"] = $restaurantName;
+        echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewRestaurantFood.php'</script>";
+    }
+}
+
+                                        $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+
+                                        $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount, r.restaurant_id FROM restaurant r JOIN restaurantFood rf ON r.restaurant_id = rf.restaurant_id ORDER BY r.name ASC;";
+                                        $res = pg_query($link, $query);
+                                        
+                                        echo "<table>";
+                                        echo "<tr>";
+                                        while ($row = pg_fetch_row($res)) {
+                                            $restaurantName = $row[0];
+                                            $contactNo = $row[1];
+                                            $address = $row[2];
+                                            $area = $row[3];
+                                            $minMonetaryAmount = $row[4];
+                                                                                  
+                                                echo 
+                                                "<form method='post' name='myForm'>
+                                                <td><div class='card'>
+                                                <img src='/cs2102grp48fds/CustomerUI/assets/images/restaurants/$restaurantName.jpg' alt='$restaurantName' style='width: 100%; height: 200px;'>
+                                                <p><input type='submit' id='viewFoodButton' name='btnViewFoodBasedOnRestaurant' value='$restaurantName' title='Click to view food sold'/></p>
+                                                
+                                                <h3>$contactNo</h3>
+                                                <h3>$address ($area)</h3>
+                                                <h3>Minimum amount: $$minMonetaryAmount</h3>
+                                                </div></td>
+                                                </form>"; 
+                                        }
+                                        echo "</tr>";
+                                        echo "</table>";
+    
+                                ?>
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-sm-12">
-                            <div class="wow fadeInUp about-image" data-wow-delay="0.6s">
-                                <img src="../assets/images/about-image.jpg" class="img-responsive" alt="">
-                            </div>
-                        </div>
 
                     </div>
                 </div>

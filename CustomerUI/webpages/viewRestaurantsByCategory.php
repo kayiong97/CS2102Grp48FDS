@@ -5,7 +5,6 @@
     {
         
     }
-
 ?>
 
     <!DOCTYPE html>
@@ -117,13 +116,14 @@
             </div>
         </section>
 
+
 <style>
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   max-width: 300px;
   margin: auto;
   text-align: center;
-  font-family: arial;
+  // font-family: arial;
   padding: 5px;
   min-width: 300px;
 
@@ -149,57 +149,57 @@
 .card button:hover {
   opacity: 0.7;
 }
-
 </style>
 
-        <!-- Categories -->
+        <<!-- Restaurants -->
             <section id="about" data-stellar-background-ratio="0.5">
 
                 <div class="container">
                     <div class="row">
-                        <h2><u>>> Categories</u></h2>
+                        <h2><u>>> Restaurants <?php echo "(".$_SESSION[ "restaurantsBasedOnCategory"].")"; ?></u></h2> 
 
                         <div class="col-md-6 col-sm-12">
                             <div class="about-info">
-<?php
-
-if($_POST){
-    if(isset($_POST['btnViewRestaurantBasedOnCategory'])){
-        $categories = $_POST["btnViewRestaurantBasedOnCategory"];
-        $_SESSION["restaurantsBasedOnCategory"] = $categories;
-        echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewRestaurantsByCategory.php'</script>";
-    }
-}
-    
-
-	$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-
-    $query = "SELECT distinct category FROM restaurantFood ORDER BY category ASC;";
-    $res = pg_query($link, $query);
-    
-    echo "<table>";
-    echo "<tr>";
-	while ($row = pg_fetch_row($res)) {
-            $categories = $row[0];
-            $_SESSION["categories"] = $categories;
+                                <?php
+                                
+                                    if( isset( $_SESSION[ "restaurantsBasedOnCategory"] ))
+                                    {
+                                        $categories = $_SESSION["restaurantsBasedOnCategory"];
             
-            echo 
-            "<form method='post' name='myForm'>
-            <td><div class='card'>
-            <img src='/cs2102grp48fds/CustomerUI/assets/images/categories/$categories.jpg' alt='$categories' style='width: 100%; height: 200px;'>
-            <br/><br/>
-            <p><input type='submit' id='viewRestaurantsButton' name='btnViewRestaurantBasedOnCategory' value='$categories'/></p>
-            </div></td>
-            </form>"; 
-    }
-    echo "</tr>";
-    echo "</table>";
-?>
+                                        $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-
+                                        $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount FROM restaurant r JOIN restaurantFood rf ON r.restaurant_id = rf.restaurant_id WHERE rf.category = '$categories' ORDER BY r.name ASC;";
+                                        $res = pg_query($link, $query);
+                                        
+                                                                                echo "<table>";
+                                        echo "<tr>";
+                                        while ($row = pg_fetch_row($res)) {
+                                            $restaurantName = $row[0];
+                                            $contactNo = $row[1];
+                                            $address = $row[2];
+                                            $area = $row[3];
+                                            $minMonetaryAmount = $row[4];
+                                                                                  
+                                                echo 
+                                                "<form method='post' name='myForm'>
+                                                <td><div class='card'>
+                                                <img src='/cs2102grp48fds/CustomerUI/assets/images/restaurants/$restaurantName.jpg' alt='$restaurantName' style='width: 100%; height: 200px;'>
+                                                <p><input type='submit' id='viewFoodButton' name='btnViewFoodBasedOnRestaurant' value='$restaurantName' title='Click to view food sold'/></p>
+                                                
+                                                <h3>$contactNo</h3>
+                                                <h3>$address ($area)</h3>
+                                                <h3>Minimum amount: $$minMonetaryAmount</h3>
+                                                </div></td>
+                                                </form>"; 
+                                        }
+                                        echo "</tr>";
+                                        echo "</table>";
+                                    
+                                    }
+                                ?>
                             </div>
                         </div>
-    
+
                     </div>
                 </div>
             </section>

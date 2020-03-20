@@ -98,7 +98,7 @@
                         <!--<li><a href="#about" class="smoothScroll">About</a></li>-->
                         <li><a href="restaurants.php" class="smoothScroll">Restaurant</a></li>
                         <li><a href="categories.php" class="smoothScroll">Categories</a></li>
-                        <li><a href="#contact" class="smoothScroll">Contact</a></li>
+                        <!--<li><a href="#contact" class="smoothScroll">Contact</a></li>-->
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
