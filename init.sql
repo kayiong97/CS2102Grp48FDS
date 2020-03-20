@@ -4,152 +4,262 @@ DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS stores CASCADE;
 DROP TABLE IF EXISTS delivery CASCADE;
 DROP TABLE IF EXISTS restaurant CASCADE;
-
 DROP TABLE IF EXISTS restaurantFood CASCADE;
+DROP TABLE IF EXISTS restaurantStaff CASCADE;
+DROP TABLE IF EXISTS fdsManager CASCADE;
+DROP TABLE IF EXISTS rider CASCADE;
+DROP TABLE IF EXISTS partTimeRider CASCADE;
+DROP TABLE IF EXISTS fullTimeRider CASCADE;
+DROP TABLE IF EXISTS ftOwns CASCADE;
+DROP TABLE IF EXISTS ptOwns CASCADE;
+DROP TABLE IF EXISTS monthlyWorkSchedule CASCADE;
+DROP TABLE IF EXISTS weeklyWorkSchedule CASCADE;
+DROP TABLE IF EXISTS promotion CASCADE;
+DROP TABLE IF EXISTS contain CASCADE;
+DROP TABLE IF EXISTS completes CASCADE;
+DROP TABLE IF EXISTS creditCardDetails CASCADE;
+DROP TABLE IF EXISTS pointTransaction CASCADE;
+DROP TABLE IF EXISTS payment CASCADE;
+DROP TABLE IF EXISTS shift CASCADE;
+DROP TABLE IF EXISTS workingDays CASCADE;
 
 CREATE TABLE users (
-	user_id integer,
+	userId integer GENERATED ALWAYS AS IDENTITY,
 	name varchar(50) NOT NULL,
-	username varchar(100) NOT NULL,
+	username varchar(100) UNIQUE NOT NULL,
 	password varchar(100) NOT NULL,
 	contactNo varchar(8) NOT NULL,
-	PRIMARY KEY (user_id)
+	PRIMARY KEY (userId) 
 );
 
 CREATE TABLE customers (
-	customer_id integer,
+	customerId integer GENERATED ALWAYS AS IDENTITY,
 	accumulatedPoints integer,
-	user_id integer,
-	PRIMARY KEY (customer_id),
-	FOREIGN KEY (user_id) REFERENCES users
+	userId integer,
+	PRIMARY KEY (customerId), 
+	FOREIGN KEY (userId) REFERENCES users ON DELETE CASCADE
 );
 
-CREATE TABLE admin (
-	admin_id integer GENERATED ALWAYS AS IDENTITY,
-	aName varchar(50) NOT NULL,
-	aUsername varchar(100) NOT NULL,
-	aPassword varchar(100) NOT NULL,
-	aContactNo varchar(8) NOT NULL,
-    aRole integer NOT NULL,
-	PRIMARY KEY (admin_id)
+CREATE TABLE restaurantStaff (
+	userId integer PRIMARY KEY REFERENCES users ON DELETE CASCADE
 );
 
-CREATE TABLE orders (
-	order_id integer,
-	totalOrderCost decimal,
-	orderDateTime timestamp,
-	deliveryLocation varchar(100),
-	deliveryFee decimal,
-	PRIMARY KEY (order_id)
+CREATE TABLE fdsManager (
+	userId integer PRIMARY KEY REFERENCES users ON DELETE CASCADE
 );
 
-CREATE TABLE stores (
-	customer_id integer,
-	delivery_id integer,
-	PRIMARY KEY (customer_id, delivery_id)
+CREATE TABLE rider (
+	riderId integer PRIMARY KEY REFERENCES users ON DELETE CASCADE	 
 );
 
-CREATE TABLE delivery (
-	delivery_id integer,
-	deliveryLocations varchar(500),
-	orderedTimestamp timestamp, 
-	/* This is for doing the order by desc to get recent locations. 
-	Assuming when an Order is made, at the same time we have to add into Delivery at this point in time.
-	So no need reference order's date time and get that date & order by based on that.*/
-	PRIMARY KEY (delivery_id)
+CREATE TABLE partTimeRider (
+	riderId integer PRIMARY KEY REFERENCES rider ON DELETE CASCADE,
+	weeklyBaseSalary float
+);
+
+CREATE TABLE fullTimeRider (
+	riderId integer PRIMARY KEY REFERENCES rider ON DELETE CASCADE,
+	monthlyBaseSalary float
+);
+
+CREATE TABLE weeklyWorkSchedule (
+	weeklyWsId integer GENERATED ALWAYS AS IDENTITY,
+	PRIMARY KEY(weeklyWsId)
+);
+
+CREATE TABLE shift (
+	shiftId integer GENERATED ALWAYS AS IDENTITY,
+	PRIMARY KEY (shiftId)
+);
+
+CREATE TABLE workingDays (
+	workingDayId integer GENERATED ALWAYS AS IDENTITY,
+	PRIMARY KEY (workingDayId)
+);
+
+CREATE TABLE ftOwns (
+	riderId integer,
+	workingDayId integer,
+	shiftId integer,
+	PRIMARY KEY (riderId, workingDayId, shiftId),
+	FOREIGN KEY (riderId) REFERENCES fullTimeRider,
+	FOREIGN KEY (workingDayId) REFERENCES workingDays,
+	FOREIGN KEY (shiftId) REFERENCES shift
+);
+
+CREATE TABLE ptOwns (
+	riderId integer,
+	weeklyWorkSchedule integer,
+	FOREIGN KEY (riderId) REFERENCES partTimeRider,
+	FOREIGN KEY (weeklyWorkSchedule) REFERENCES weeklyWorkSchedule
 );
 
 CREATE TABLE restaurant (
-	restaurant_id integer,
-	name varchar(100),
-	contactNo varchar(100),
-	address varchar (200),
-	area varchar (100),
-	minMonetaryAmount integer,
-	PRIMARY KEY (restaurant_id)
+	restaurantId integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	name varchar(100) NOT NULL,
+	contactNo varchar(100) NOT NULL,
+	address varchar (200) NOT NULL,
+	area varchar (100) NOT NULL,
+	minMonetaryAmount integer
+);
+
+CREATE TABLE promotion (
+	promotionId integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	information varchar (500),
+	promoStartDate date NOT NULL,
+	promoEndDate date NOT NULL,
+	discountAmount float NOT NULL,
+	restaurantId integer,
+	FOREIGN KEY (restaurantId) REFERENCES restaurant ON DELETE CASCADE
 );
 
 CREATE TABLE restaurantFood (
-	food_id integer,
-	price FLOAT,
-	name varchar(100),
-	category varchar(100),
+	price FLOAT NOT NULL,
+	name varchar(100) UNIQUE,
+	category varchar(100) NOT NULL,
 	information varchar(500),
 	availabilityStatus BOOLEAN DEFAULT FALSE,
-	restaurant_id integer,
-	PRIMARY KEY (food_id, restaurant_id),
-	FOREIGN KEY (restaurant_id) REFERENCES restaurant ON DELETE CASCADE
+	restaurantId integer,
+	dailyLimit integer,
+	PRIMARY KEY (name, restaurantId),
+	FOREIGN KEY (restaurantId) REFERENCES restaurant ON DELETE CASCADE
 );
 
-INSERT INTO restaurant(restaurant_id, name, contactNo, address, area, minMonetaryAmount) values(10, 'Rochor Beancurd', '63723101', '787 Geylang Road S389660', 'East', 8);
-INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(10, 2.5, 'Soya Beancurd', 'Dessert', 'Homemade soya beancurd, freshly made daily', true, 10);
-INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(11, 3.5, 'Soya Beancurd with Pearls', 'Dessert', 'Homemade soya beancurd, freshly made daily with pearls', true, 10);
+CREATE TABLE orders (
+	orderId integer GENERATED ALWAYS AS IDENTITY,
+	totalOrderCost float NOT NULL,
+	orderDateTime timestamp NOT NULL,
+	deliveryLocation varchar(100) NOT NULL,
+	deliveryFee float NOT NULL,
+	promotionId integer,
+	PRIMARY KEY (orderId),
+	FOREIGN KEY (promotionId) REFERENCES promotion
+);
 
-INSERT INTO restaurant(restaurant_id, name, contactNo, address, area, minMonetaryAmount) values(11, 'Popeyes', '63723102', '23 Kallang Wave Road S298102', 'East', 15);
-INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(12, 5.0, '2 Pcs Chicken Set', 'Fast Food', 'Fried upon order, with Popeyes secret batter', true, 11);
+CREATE TABLE contain (
+	containId integer,
+	quantity integer NOT NULL,
+	orderId integer,
+	name varchar(100),
+	restaurantId integer,
+	PRIMARY KEY (containId, orderId, name), 
+	FOREIGN KEY (name, restaurantId) REFERENCES restaurantFood(name, restaurantId),
+	FOREIGN KEY	(orderId) REFERENCES orders
+);
 
-INSERT INTO restaurant(restaurant_id, name, contactNo, address, area, minMonetaryAmount) values(12, 'Texas', '63723103', '45 Kallang Wave Road S298119', 'East', 15);
-INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(13, 5.5, '2 Pcs Chicken Set', 'Fast Food', 'Fried upon order, with Texas secret batter', true, 12);
+CREATE TABLE payment (
+	paymentId integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	paymentType varchar(20) NOT NULL,
+	paymentAmount float NOT NULL,
+	orderId integer,
+	FOREIGN KEY (orderId) REFERENCES orders 
+);
 
-INSERT INTO restaurant(restaurant_id, name, contactNo, address, area, minMonetaryAmount) values(13, 'Playmade', '63723104', '22 Upper Paya Lebar Road S380290', 'East', 5);
-INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(14, 3.5, 'Chrysanthemum Tea', 'Bubble Tea', 'Freshly brewed chrysanthemum tea', true, 13);
+CREATE TABLE completes (
+	completeId integer,
+	restaurantId integer,
+	riderId integer,
+	customerId integer,
+	ratingScale integer,
+	reviewDetails varchar(500),
+	paymentId integer,
+	PRIMARY KEY (completeId, restaurantId, riderId),
+	FOREIGN KEY (customerId) REFERENCES customers,
+	FOREIGN KEY (paymentId) REFERENCES payment,
+	FOREIGN KEY (riderId) REFERENCES rider,
+	FOREIGN KEY (restaurantId) REFERENCES restaurant
+);
 
-INSERT INTO users(user_id, name, username, password, contactNo) values(1, 'Lee Xiao Long', 'leexl', 'password', '81110111');
-INSERT INTO users(user_id, name, username, password, contactNo) values(2, 'Lee Xiao Bin', 'leexb', 'password', '81110112');
-INSERT INTO users(user_id, name, username, password, contactNo) values(3, 'Lee Xiao Kun', 'leexk', 'password', '81110113');
+CREATE TABLE stores (
+	customerId integer,
+	deliveryId integer,
+	PRIMARY KEY (customerId, deliveryId)
+);
 
-INSERT INTO customers(customer_id, accumulatedPoints, user_id) values(1, 100, 1);
-INSERT INTO customers(customer_id, accumulatedPoints, user_id) values(2, 200, 2);
-INSERT INTO customers(customer_id, accumulatedPoints, user_id) values(3, 300, 3);
+CREATE TABLE creditCardDetails (
+	cardNumber integer NOT NULL,
+	cardHolderName varchar (100),
+	cvvNumber integer NOT NULL,
+	expiryDate date NOT NULL,
+	customerId integer,
+	PRIMARY KEY (customerId, cardNumber),
+	FOREIGN KEY (customerId) REFERENCES customers ON DELETE CASCADE	
+);
 
--- INSERT INTO completes(customer_id, order_id, payment_id) values(1, 1, 1);
--- INSERT INTO completes(customer_id, order_id, payment_id) values(1, 2, 2);
--- INSERT INTO completes(customer_id, order_id, payment_id) values(3, 3, 3);
+CREATE TABLE delivery (
+	deliveryId integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	deliveryLocation varchar(500) NOT NULL,
+	customerId integer,
+	FOREIGN KEY (customerId) REFERENCES customers
+);
 
-/* Customer 2 - leexb */
-INSERT INTO orders(order_id, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
+CREATE TABLE pointTransaction (
+	pointsId integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	points integer NOT NULL,
+	pointsTransactedDate date NOT NULL,
+	customerId integer,
+	FOREIGN KEY (customerId) REFERENCES customers 
+);
+
+/*
+INSERT INTO restaurant(restaurantId, name, contactNo, address, area, minMonetaryAmount) values(10, 'Rochor Beancurd', '63723101', '787 Geylang Road S389660', 'East', 8);
+INSERT INTO restaurantFood(foodId, price, name, category, information, availabilityStatus, restaurantId) values(10, 2.5, 'Soya Beancurd', 'Dessert', 'Homemade soya beancurd, freshly made daily', true, 10);
+INSERT INTO restaurantFood(foodId, price, name, category, information, availabilityStatus, restaurantId) values(11, 3.5, 'Soya Beancurd with Pearls', 'Dessert', 'Homemade soya beancurd, freshly made daily with pearls', true, 10);
+
+INSERT INTO restaurant(restaurantId, name, contactNo, address, area, minMonetaryAmount) values(11, 'Popeyes', '63723102', '23 Kallang Wave Road S298102', 'East', 15);
+INSERT INTO restaurantFood(foodId, price, name, category, information, availabilityStatus, restaurantId) values(12, 5.0, '2 Pcs Chicken Set', 'Fast Food', 'Fried upon order, with Popeyes secret batter', true, 11);
+
+INSERT INTO restaurant(restaurantId, name, contactNo, address, area, minMonetaryAmount) values(12, 'Texas', '63723103', '45 Kallang Wave Road S298119', 'East', 15);
+INSERT INTO restaurantFood(foodId, price, name, category, information, availabilityStatus, restaurantId) values(13, 5.5, '2 Pcs Chicken Set', 'Fast Food', 'Fried upon order, with Texas secret batter', true, 12);
+
+INSERT INTO restaurant(restaurantId, name, contactNo, address, area, minMonetaryAmount) values(13, 'Playmade', '63723104', '22 Upper Paya Lebar Road S380290', 'East', 5);
+INSERT INTO restaurantFood(foodId, price, name, category, information, availabilityStatus, restaurantId) values(14, 3.5, 'Chrysanthemum Tea', 'Bubble Tea', 'Freshly brewed chrysanthemum tea', true, 13);
+
+INSERT INTO users(userId, name, username, password, contactNo) values(1, 'Lee Xiao Long', 'leexl', 'password', '81110111');
+INSERT INTO users(userId, name, username, password, contactNo) values(2, 'Lee Xiao Bin', 'leexb', 'password', '81110112');
+INSERT INTO users(userId, name, username, password, contactNo) values(3, 'Lee Xiao Kun', 'leexk', 'password', '81110113');
+
+INSERT INTO customers(customerId, accumulatedPoints, userId) values(1, 100, 1);
+INSERT INTO customers(customerId, accumulatedPoints, userId) values(2, 200, 2);
+INSERT INTO customers(customerId, accumulatedPoints, userId) values(3, 300, 3);
+
+INSERT INTO orders(orderId, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(3, 70, '2019-6-20 14:23:54', '234 Seng Keng Avenue 3 #21-14 S201010', 10);
-INSERT INTO delivery(delivery_id, deliveryLocations, orderedTimestamp) values(3, '234 Seng Keng Avenue 3 #21-14 S201010', current_timestamp);
-INSERT INTO stores(customer_id, delivery_id) values (2, 3);
+INSERT INTO delivery(deliveryId, deliveryLocations, orderedTimestamp) values(3, '234 Seng Keng Avenue 3 #21-14 S201010', current_timestamp);
+INSERT INTO stores(customerId, deliveryId) values (2, 3);
 
-/* Customer 1 - leexl ; Take 5 most recent 5 delivery locations. TEST - Here got 7 now, with 2 same locations*/
-/* Should retrieve out 1 Computing Drive, 1 Clementi, Kim Cheng, Boon Tiong, Geylang.
-	NOT Barney because Barney those above 5 are the latest 5 via ORDER BY DESC. 
-	Or... if don't order by orderDateTime also can, just get from last 5 because every earlier tuple = earlier order.*/
-	
-/* If 2 Barney is latest recent 2, then should retrieve 1 of them and assume as 2 recent locations or?*/
-/* CHECK ^^^^^^^*/
-INSERT INTO orders(order_id, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
+INSERT INTO orders(orderId, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(1, 50, '2019-5-19 10:23:54', '123 Barney Road #01-04 S101010', 5);
-INSERT INTO delivery(delivery_id, deliveryLocations, orderedTimestamp) values(1, '123 Barney Road #01-04 S101010', current_timestamp);
-INSERT INTO stores(customer_id, delivery_id) values (1, 1);
+INSERT INTO delivery(deliveryId, deliveryLocations, orderedTimestamp) values(1, '123 Barney Road #01-04 S101010', current_timestamp);
+INSERT INTO stores(customerId, deliveryId) values (1, 1);
 
-INSERT INTO orders(order_id, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
+INSERT INTO orders(orderId, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(2, 60, '2019-5-20 12:23:54', '123 Barney Road #01-04 S101010', 5);
-INSERT INTO delivery(delivery_id, deliveryLocations, orderedTimestamp) values(2, '123 Barney Road #01-04 S101010', current_timestamp);
-INSERT INTO stores(customer_id, delivery_id) values (1, 2);
+INSERT INTO delivery(deliveryId, deliveryLocations, orderedTimestamp) values(2, '123 Barney Road #01-04 S101010', current_timestamp);
+INSERT INTO stores(customerId, deliveryId) values (1, 2);
 
-INSERT INTO orders(order_id, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
+INSERT INTO orders(orderId, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(4, 100, '2019-5-24 12:23:54', '34 Computing Drive #4-21 S301010', 8);
-INSERT INTO delivery(delivery_id, deliveryLocations, orderedTimestamp) values(4, '34 Computing Drive #4-21 S301010', current_timestamp);
-INSERT INTO stores(customer_id, delivery_id) values (1, 4);
+INSERT INTO delivery(deliveryId, deliveryLocations, orderedTimestamp) values(4, '34 Computing Drive #4-21 S301010', current_timestamp);
+INSERT INTO stores(customerId, deliveryId) values (1, 4);
 
-INSERT INTO orders(order_id, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
+INSERT INTO orders(orderId, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(5, 80, '2019-5-26 12:23:54', '42 Clementi Road S103391', 8);
-INSERT INTO delivery(delivery_id, deliveryLocations, orderedTimestamp) values(5, '42 Clementi Road S103391', current_timestamp);
-INSERT INTO stores(customer_id, delivery_id) values (1, 5);
+INSERT INTO delivery(deliveryId, deliveryLocations, orderedTimestamp) values(5, '42 Clementi Road S103391', current_timestamp);
+INSERT INTO stores(customerId, deliveryId) values (1, 5);
 
-INSERT INTO orders(order_id, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
+INSERT INTO orders(orderId, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(6, 20, '2019-6-10 12:23:54', '34 Kim Cheng Street #01-21 S160110', 4);
-INSERT INTO delivery(delivery_id, deliveryLocations, orderedTimestamp) values(6, '34 Kim Cheng Street #01-21 S160110', current_timestamp);
-INSERT INTO stores(customer_id, delivery_id) values (1, 6);
+INSERT INTO delivery(deliveryId, deliveryLocations, orderedTimestamp) values(6, '34 Kim Cheng Street #01-21 S160110', current_timestamp);
+INSERT INTO stores(customerId, deliveryId) values (1, 6);
 
-INSERT INTO orders(order_id, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
+INSERT INTO orders(orderId, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(7, 50, '2019-10-10 20:23:54', '139 Boon Tiong Road S169920', 4);
-INSERT INTO delivery(delivery_id, deliveryLocations, orderedTimestamp) values(7, '139 Boon Tiong Road S169920', current_timestamp);
-INSERT INTO stores(customer_id, delivery_id) values (1, 7);
+INSERT INTO delivery(deliveryId, deliveryLocations, orderedTimestamp) values(7, '139 Boon Tiong Road S169920', current_timestamp);
+INSERT INTO stores(customerId, deliveryId) values (1, 7);
 
-INSERT INTO orders(order_id, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
+INSERT INTO orders(orderId, totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(8, 100, '2019-10-21 15:23:54', '795 Geylang Road #01-01 S389678', 7);
-INSERT INTO delivery(delivery_id, deliveryLocations, orderedTimestamp) values(8, '795 Geylang Road #01-01 S389678', current_timestamp);
-INSERT INTO stores(customer_id, delivery_id) values (1, 8);
+INSERT INTO delivery(deliveryId, deliveryLocations, orderedTimestamp) values(8, '795 Geylang Road #01-01 S389678', current_timestamp);
+INSERT INTO stores(customerId, deliveryId) values (1, 8);
+*/
