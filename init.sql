@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS stores CASCADE;
 DROP TABLE IF EXISTS delivery CASCADE;
 DROP TABLE IF EXISTS restaurant CASCADE;
 
+DROP TABLE IF EXISTS restaurantFood CASCADE;
 
 CREATE TABLE users (
 	user_id integer,
@@ -21,6 +22,16 @@ CREATE TABLE customers (
 	user_id integer,
 	PRIMARY KEY (customer_id),
 	FOREIGN KEY (user_id) REFERENCES users
+);
+
+CREATE TABLE admin (
+	admin_id integer GENERATED ALWAYS AS IDENTITY,
+	aName varchar(50) NOT NULL,
+	aUsername varchar(100) NOT NULL,
+	aPassword varchar(100) NOT NULL,
+	aContactNo varchar(8) NOT NULL,
+    aRole integer NOT NULL,
+	PRIMARY KEY (admin_id)
 );
 
 CREATE TABLE orders (
@@ -69,6 +80,19 @@ CREATE TABLE restaurantFood (
 	PRIMARY KEY (food_id, restaurant_id),
 	FOREIGN KEY (restaurant_id) REFERENCES restaurant ON DELETE CASCADE
 );
+
+INSERT INTO restaurant(restaurant_id, name, contactNo, address, area, minMonetaryAmount) values(10, 'Rochor Beancurd', '63723101', '787 Geylang Road S389660', 'East', 8);
+INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(10, 2.5, 'Soya Beancurd', 'Dessert', 'Homemade soya beancurd, freshly made daily', true, 10);
+INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(11, 3.5, 'Soya Beancurd with Pearls', 'Dessert', 'Homemade soya beancurd, freshly made daily with pearls', true, 10);
+
+INSERT INTO restaurant(restaurant_id, name, contactNo, address, area, minMonetaryAmount) values(11, 'Popeyes', '63723102', '23 Kallang Wave Road S298102', 'East', 15);
+INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(12, 5.0, '2 Pcs Chicken Set', 'Fast Food', 'Fried upon order, with Popeyes secret batter', true, 11);
+
+INSERT INTO restaurant(restaurant_id, name, contactNo, address, area, minMonetaryAmount) values(12, 'Texas', '63723103', '45 Kallang Wave Road S298119', 'East', 15);
+INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(13, 5.5, '2 Pcs Chicken Set', 'Fast Food', 'Fried upon order, with Texas secret batter', true, 12);
+
+INSERT INTO restaurant(restaurant_id, name, contactNo, address, area, minMonetaryAmount) values(13, 'Playmade', '63723104', '22 Upper Paya Lebar Road S380290', 'East', 5);
+INSERT INTO restaurantFood(food_id, price, name, category, information, availabilityStatus, restaurant_id) values(14, 3.5, 'Chrysanthemum Tea', 'Bubble Tea', 'Freshly brewed chrysanthemum tea', true, 13);
 
 INSERT INTO users(user_id, name, username, password, contactNo) values(1, 'Lee Xiao Long', 'leexl', 'password', '81110111');
 INSERT INTO users(user_id, name, username, password, contactNo) values(2, 'Lee Xiao Bin', 'leexb', 'password', '81110112');
