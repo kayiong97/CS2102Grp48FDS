@@ -162,13 +162,21 @@
                             <div class="about-info">
                                 <?php
                                 
+                                                                if($_POST){
+    if(isset($_POST['btnViewFoodBasedOnRestaurant'])){
+        $restaurantName = $_POST["btnViewFoodBasedOnRestaurant"];
+        $_SESSION["viewFoodByRestaurantName"] = $restaurantName;
+        echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewRestaurantFood.php'</script>";
+    }
+}
+
                                     if( isset( $_SESSION[ "restaurantsBasedOnCategory"] ))
                                     {
                                         $categories = $_SESSION["restaurantsBasedOnCategory"];
             
                                         $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-                                        $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount FROM restaurant r JOIN restaurantFood rf ON r.restaurant_id = rf.restaurant_id WHERE rf.category = '$categories' ORDER BY r.name ASC;";
+                                        $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount FROM restaurant r JOIN restaurantFood rf ON r.restaurantId = rf.restaurantId WHERE rf.category = '$categories' ORDER BY r.name ASC;";
                                         $res = pg_query($link, $query);
                                         
                                                                                 echo "<table>";

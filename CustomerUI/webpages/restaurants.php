@@ -171,7 +171,7 @@
 
                                         $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-                                        $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount, r.restaurant_id FROM restaurant r JOIN restaurantFood rf ON r.restaurant_id = rf.restaurant_id ORDER BY r.name ASC;";
+                                        $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount FROM restaurant r JOIN restaurantFood rf ON r.restaurantId = rf.restaurantId ORDER BY r.name ASC;";
                                         $res = pg_query($link, $query);
                                         
                                         echo "<table>";

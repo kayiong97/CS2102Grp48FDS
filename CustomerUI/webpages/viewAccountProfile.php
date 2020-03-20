@@ -4,7 +4,7 @@
     $username = $_SESSION["username"];
 	$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-	$query = "SELECT u.username, c.accumulatedPoints, u.name, u.contactNo FROM customers c JOIN users u on c.customer_id = u.user_id WHERE u.username = '$username';";
+	$query = "SELECT u.username, c.accumulatedPoints, u.name, u.contactNo FROM customers c JOIN users u on c.customerid = u.userId WHERE u.username = '$username';";
 
 	$res = pg_query($link, $query);
 
@@ -167,20 +167,20 @@
 
 	$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-    $query2 = "select deliverylocations from delivery d
-    JOIN stores s on s.delivery_id = d.delivery_id
-    JOIN customers c on s.customer_id = c.customer_id
-    JOIN users u on u.user_id = c.user_id
+    $query2 = "select deliverylocation from delivery d
+    JOIN stores s on s.deliveryId = d.deliveryId
+    JOIN customers c on s.customerId = c.customerId
+    JOIN users u on u.userId = c.userId
     WHERE u.username = '$username'
     ORDER BY d.orderedTimestamp DESC LIMIT 5;";
     $res2 = pg_query($link, $query2);
 
 	while ($row = pg_fetch_row($res2)) {
 
-            $deliveryLocations = $row[0];
-			$_SESSION["deliveryLocations"] = $deliveryLocations;
+            $deliveryLocation = $row[0];
+			$_SESSION["deliveryLocation"] = $deliveryLocation;
 
-            echo "<br/> $deliveryLocations <br/>";
+            echo "<br/> $deliveryLocation <br/>";
 
 		}
 

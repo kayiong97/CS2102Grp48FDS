@@ -1,32 +1,28 @@
 <?php
-/*		$link = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=password");
-			$query = " SELECT * FROM customers;";
-			$res = pg_query($link,$query);
-
-			echo "<table>";
-
-			while ($row = pg_fetch_row($res)) {
-			  echo "Customer Name: $row[0]  Area: $row[1]   ";
-			  echo "<br />\n";
-			}
-	*/
 
 session_start();
-$username=($_POST["username"]);
-$password=($_POST["password"]);
-$link=pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-$query="SELECT u.username, u.password FROM customers c JOIN users u on c.customer_id = u.user_id WHERE u.username = '$username' and u.password = '$password';";
-$res=pg_query($link, $query);
-while ($row=pg_fetch_row($res)) {
-    if ($row[0]==$username && $row[1]==$password) {
-        $_SESSION["username"]=$username;
-        echo "Hi " + $username + " . Welcome!";
-        header('Location: /cs2102grp48fds/CustomerUI/webpages/index.php');
+
+if(isset($_POST['btnLogin'])){
+    
+    $username=($_POST["username"]);
+    $password=($_POST["password"]);
+    $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+    $query = "SELECT u.username, u.password FROM customers c JOIN users u on c.customerId = u.userId WHERE u.username = '$username' and u.password = '$password';";
+    $res = pg_query($link, $query);
+    
+    while ($row = pg_fetch_row($res)) {
+        if ($row[0] == $username && $row[1] == $password) {
+            $_SESSION["username"] = $username;
+            header('Location: /cs2102grp48fds/CustomerUI/webpages/index.php');
+        }
     }
-    else echo "Sorry, you have entered incorrect username/password.";
+    
+    echo "Sorry, you have entered incorrect username/password.";     
 }
 
-?> <!DOCTYPE html> 
+?> 
+
+<!DOCTYPE html> 
 
 <html> 
 
@@ -212,11 +208,8 @@ form {
 </head> 
 
 <body> 
-    <!--<h2>Modal Login Form</h2>--> <!--<button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>--> <!--<div id="id01" class="modal">--> 
     <form class="modal-content animate" method="post" style="width: 50%;"> 
         <div class="imgcontainer"> 
-            <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span> 
-
             <img src="../assets/images/img_avatar2.png" alt="Avatar" class="avatar" id="imageAvatar"> 
         </div> 
         
@@ -230,27 +223,11 @@ form {
             <label for="password"><b>Password</b></label> 
             <input type="password" placeholder="Enter Password" name="password" required> 
             
-            <button type="submit">Login</button> 
+            <button type="submit" name="btnLogin">Login</button> 
             
         </div> 
         
-        <div class="container" style="background-color:#f1f1f1"> 
-            <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button> 
-            <span class="psw">Forgot <a href="#">password?</a></span> 
-        </div> 
-        
-    </form> <!--</div>--> 
-        
-    <script> // Get the modal
-        var modal=document.getElementById('id01');
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick=function (event) {
-            if (event.target==modal) {
-                modal.style.display="none";
-            }
-        }
-
-    </script> 
+    </form> 
 </body> 
 
 </html>
