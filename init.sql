@@ -64,8 +64,17 @@ CREATE TABLE fullTimeRider (
 
 CREATE TABLE weeklyWorkSchedule (
 	weeklyWsId integer GENERATED ALWAYS AS IDENTITY,
+    operateStartTime TimeStamp,
+    operateEndTime TimeStamp,
+    breakStartTime TimeStamp,
+    breakEndTime TimeStamp,
+    day integer,
+    month integer,
+    year integer,
+    duration integer,
 	PRIMARY KEY(weeklyWsId)
 );
+
 
 CREATE TABLE shift (
 	shiftId integer GENERATED ALWAYS AS IDENTITY,
@@ -74,13 +83,17 @@ CREATE TABLE shift (
 
 CREATE TABLE workingDays (
 	workingDayId integer GENERATED ALWAYS AS IDENTITY,
+	workingday integer,
+	workingdayhours integer,
 	PRIMARY KEY (workingDayId)
 );
+
 
 CREATE TABLE ftOwns (
 	riderId integer,
 	workingDayId integer,
 	shiftId integer,
+	month integer,
 	PRIMARY KEY (riderId, workingDayId, shiftId),
 	FOREIGN KEY (riderId) REFERENCES fullTimeRider,
 	FOREIGN KEY (workingDayId) REFERENCES workingDays,
@@ -157,6 +170,7 @@ CREATE TABLE payment (
 
 CREATE TABLE completes (
 	completeId integer,
+    completedDateTime TimeStamp,
 	restaurantId integer,
 	riderId integer,
 	customerId integer,
@@ -191,6 +205,10 @@ CREATE TABLE delivery (
 	deliveryLocation varchar(500) NOT NULL,
 	customerId integer,
 	orderedTimestamp timestamp,
+    riderId integer,
+    ordersId integer,
+    FOREIGN KEY (ordersId) REFERENCES orders,
+    FOREIGN KEY (riderId) REFERENCES rider,
 	FOREIGN KEY (customerId) REFERENCES customers
 );
 
