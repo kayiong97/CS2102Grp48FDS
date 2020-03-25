@@ -123,10 +123,11 @@
   max-width: 300px;
   margin: auto;
   text-align: center;
-  font-family: arial;
+  // font-family: arial;
   padding: 5px;
   min-width: 300px;
-
+  min-height: 300px;
+  max-height: 300px;
 }
 
 .price {
@@ -177,9 +178,16 @@ if($_POST){
     $query = "SELECT distinct category FROM restaurantFood ORDER BY category ASC;";
     $res = pg_query($link, $query);
     
+	$row_count=0;
+	$col_count=0;
+										
     echo "<table>";
     echo "<tr>";
 	while ($row = pg_fetch_row($res)) {
+			if($row_count%4==0){
+				echo "<tr>";
+				$col_count=1;
+			}
             $categories = $row[0];
             $_SESSION["categories"] = $categories;
             
@@ -191,12 +199,16 @@ if($_POST){
             <p><input type='submit' id='viewRestaurantsButton' name='btnViewRestaurantBasedOnCategory' value='$categories'/></p>
             </div></td>
             </form>"; 
-    }
-    echo "</tr>";
-    echo "</table>";
-?>
-
-
+    ?>
+    <?php
+		if($col_count==4){
+		   echo "</tr>";
+		}
+		$row_count++; 
+		$col_count++; 
+		}
+		?>
+		</table>
                             </div>
                         </div>
     

@@ -166,7 +166,7 @@
     if(isset($_POST['btnViewFoodBasedOnRestaurant'])){
         $restaurantName = $_POST["btnViewFoodBasedOnRestaurant"];
         $_SESSION["viewFoodByRestaurantName"] = $restaurantName;
-        echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewRestaurantFood.php'</script>";
+        echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewFoodByRestaurant.php'</script>";
     }
 }
 

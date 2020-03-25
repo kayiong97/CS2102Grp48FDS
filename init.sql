@@ -121,6 +121,7 @@ CREATE TABLE restaurantFood (
 	availabilityStatus BOOLEAN DEFAULT FALSE,
 	restaurantId integer,
 	dailyLimit integer,
+	image OID,
 	PRIMARY KEY (name, restaurantId),
 	FOREIGN KEY (restaurantId) REFERENCES restaurant ON DELETE CASCADE
 );
