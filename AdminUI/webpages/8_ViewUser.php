@@ -1,10 +1,13 @@
+<?php 
+	session_start();
+?>
+
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>Retrieve All Riders</title>
+<head> 
+	<title>Update/Delete User Details</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<style>
-.button {
+	<style>
+		.button {
 			background-color: #4CAF50; /* Green */
 			border: none;
 			color: white;
@@ -28,8 +31,8 @@
 		  background-color: Purple;
 		  color: white;
 		}
-</style>
-<!-- For Style of Admin Page -->
+	</style>
+	<!-- For Style of Admin Page -->
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -37,8 +40,9 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
 	<link href="../assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
 </head>
+
 <body>
-  <div class="wrapper ">
+<div class="wrapper ">
     <div class="sidebar" data-color="purple" data-background-color="white">
       <div class="logo">
         <a class="simple-text logo-mini">
@@ -107,7 +111,7 @@
 	  <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="javascript:;">View All Users</a>
+            <a class="navbar-brand" href="javascript:;">Update/Delete user Details <?php echo "(User Name: ".$_SESSION[ "userByName"].")"; ?></a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -130,58 +134,94 @@
           </div>
         </div>
       </nav>	  
-<!-- End Navbar -->
-</head>
-	<div class="content">
-	<div class="container-fluid">
-<body>
+      <!-- End Navbar -->
+	  
+	   <!-- Start Content -->
+      <div class="content">
+        <div class="container-fluid">
+       
+		<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/2_ViewAllUsers.php">
+				  <i class="material-icons">dashboard</i>
+				  Back
+		</a>
+		
+		<?php
+			if( isset( $_SESSION[ "userById"] ))
+			{
+			$userid = $_SESSION["userById"];
 
-<h4>Full Time Rider</h4>
-<?php
-//Hiding Errors 
-error_reporting(E_ERROR | E_PARSE);
-$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-$result = pg_query($db,"SELECT * FROM users WHERE role = 'FullTimeRider'");
-echo "<table>";
-	echo "<th align='center' width='200'>" . Id . "</th>";
-	echo "<th align='center' width='200'>" . Name. "</th>";
-	echo "<th align='center' width='200'>" . UserName. "</th>";
-	echo "<th align='center' width='200'>" . Password. "</th>";
-	echo "<th align='center' width='200'>" . Contact. "</th>";
+			$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+			$result = pg_query($db, "SELECT * FROM Users WHERE userid = $userid");
+			$row = pg_fetch_assoc($result);
 
-while($row=pg_fetch_assoc($result)){echo "<tr>";
-	echo "<td align='center' width='200'>" . $row['userid'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['name'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['username'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['password'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['contactno'] . "</td>";
-	echo "</tr>";}echo "</table>";?>
+			echo "
+			<ul>
+				<form name='update' action='8_ViewUser.php' method='POST' >
+				<table>
+					<td><label for='userid>User ID:</label></td>
+					<td><input type='text' name='user_id_updated' value='$row[userid]' disabled /></td></tr>
+					
+					<td><label for='name'>Name:</label></td>
+					<td><input type='text' name='name_updated' value='$row[name]' disabled/></td></tr>
+					
+					<td><label for='username'>User Name:</label></td>
+					<td><input type='text' name='username_updated' value='$row[username]' disabled/></td></tr>
+					
+					<td><label for='password'>Password:</label></td>
+					<td><input type='text' name='password_updated' value='$row[password]' /></td></tr>
+					
+					<td><label for='contactno'>Contact No.:</label></td>
+					<td><input type='text' name='contactno_updated' value='$row[contactno]' /></td></tr>
 
+					<td><label for='role'>Role:</label></td>
+					<td><input type='text' name='role_updated' value='$row[role]' disabled /></td></tr>
+					
+					<td><input type='submit' name='new' value='Update'/></td>
+					<td><input type='submit' name='delete' value='Delete'/></td>
+				</table>
+				</form>
+			</ul>";
+				echo " SUBMIT ****** User Name: ".$_SESSION[ "userByName"];
+			//}
+			}
+			
+			if (isset($_POST['new']))
+			{
+				
+				$userid = $_SESSION['userById'];
+				echo " NEW ****** userid: ".$_SESSION['userById'];
+				
+				$result1 = pg_query($db, "UPDATE Users SET password = '$_POST[password_updated]',contactno = '$_POST[contactno_updated]'
+					WHERE userid = '$userid'");
+				if (!$result1)
+				{
+				echo "Update failed!!";
+				} else
+				{
+				echo "Update successfull;";
+				}
+			}
 
-<h4>Part Time Rider</h4>
-<?php
-//Hiding Errors 
-error_reporting(E_ERROR | E_PARSE);
-$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-$result = pg_query($db,"SELECT * FROM users WHERE role = 'PartTimeRider'");
-echo "<table>";
-	echo "<th align='center' width='200'>" . Id . "</th>";
-	echo "<th align='center' width='200'>" . Name. "</th>";
-	echo "<th align='center' width='200'>" . UserName. "</th>";
-	echo "<th align='center' width='200'>" . Password. "</th>";
-	echo "<th align='center' width='200'>" . Contact. "</th>";
+			if (isset($_POST['delete'])){
+				$userid = $_SESSION['userById'];
+				echo " NEW ****** userid: ".$_SESSION['userById'];
+				
+				$result2 = pg_query($db, "DELETE FROM Users WHERE userid = '$userid'");
+				if (!$result2)
+				{
+				echo "Delete failed!!";
+				} else
+				{
+				echo "Delete successfull;";
+				}
+			}
+		?>
 
-while($row=pg_fetch_assoc($result)){echo "<tr>";
-	echo "<td align='center' width='200'>" . $row['userid'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['name'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['username'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['password'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['contactno'] . "</td>";
-	echo "</tr>";}
-	echo "</table>";?>
-
- 
-    <!-- Start Footer -->
+        </div>
+      </div>
+	  <!-- End Content -->
+	  
+	  <!-- Start Footer -->
       <footer class="footer">
         <div class="container-fluid">
           <nav class="float-left">
@@ -195,7 +235,8 @@ while($row=pg_fetch_assoc($result)){echo "<tr>";
           </nav>
         </div>
       </footer>
-    <!-- End Footer -->
-
+	  <!-- End Footer -->
+    </div>
+  </div>
 </body>
 </html>

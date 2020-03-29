@@ -1,136 +1,229 @@
+<?php 
+	session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<title>Retrieve All Users</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <style>
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  width: 100%;
-  border: 1px solid #ddd;
-}
-
-th, td {
-  text-align: left;
-  padding: 16px;
-}
-
-tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
 .button {
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  float: right;
-}
+			background-color: #4CAF50; /* Green */
+			border: none;
+			color: white;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			cursor: pointer;
+			float: right;
+		}
+		th, td {
+		  text-align: left;
+		  padding: 8px;
+		}
+
+		tr:nth-child(even){background-color: #f2f2f2}
+
+		th {
+		  background-color: Purple;
+		  color: white;
+		}
 
 </style>
+	<!-- For Style of Admin Page -->
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+	<link href="../assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
+</head>
+<body>
+  <div class="wrapper ">
+    <div class="sidebar" data-color="purple" data-background-color="white">
+      <div class="logo">
+        <a class="simple-text logo-mini">
+          Admin Menu List
+        </a>
+      </div>
+      <div class="sidebar-wrapper">
+        <ul class="nav">
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/2_ViewAllUsers.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Users</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/6_viewAllRiders.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Riders</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/5_ViewAllFdsManager.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>FDS Manager</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/4_ViewAllRestaurantStaff.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Restaurant Staff</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllRestaurants.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Restaurants</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllFoods.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Foods</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/7_ViewAllCustomerOrder.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Customer Order</p>
+				</a>
+			</li>
+			
+        </ul>
+      </div>
+    </div>
+	
+	
+    <div class="main-panel">
+      
+	  <!-- Start Navbar -->
+	  <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+        <div class="container-fluid">
+          <div class="navbar-wrapper">
+            <a class="navbar-brand" href="javascript:;">View All Users</a>
+          </div>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="navbar-toggler-icon icon-bar"></span>
+            <span class="navbar-toggler-icon icon-bar"></span>
+            <span class="navbar-toggler-icon icon-bar"></span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;">
+                  <i class="material-icons">notifications</i> Notifications
+                </a>
+              </li>
+
+              <form action="/cs2102grp48fds/AdminUI/webpages/3_UserLogin.php">
+                <button class="button">Logout</button>
+              </form>              
+            </ul>
+          </div>
+        </div>
+      </nav>	  
+<!-- End Navbar -->
 
 </head>
-<h1>View All Users</h1>
-<h5>Delete / Edit Users</h5>
-<form name="display" action="2_ViewAllUsers.php" method="POST" >
-  	<label for="userid">User ID:</label2><br>
-  	<input type='text'name='userid'><br>
-	<input type='submit' name='submit' value='Delete'/>
-	<input type='submit' name='submit1' value='Edit'/>
-</form>
+<!-- Start Content -->
+<div class="content">
+	 <div class="container-fluid">
+        <a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/1_CreateUser.php">
+				  <i class="material-icons">dashboard</i>
+				  Add Users
+		</a>
 
-<form action="/cs2102grp48fds/AdminUI/webpages/1_CreateUser.php">
-	<button class="button">New User</button>
-</form>
 <?php
 //Hiding Errors 
 error_reporting(E_ERROR | E_PARSE);
+
 $db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
 $result = pg_query($db,"SELECT * FROM users ORDER BY userid");
-$row = pg_fetch_assoc($result);
 
-echo "<table>";
-	echo "<th align='center' width='200'>" . Id . "</th>";
-	echo "<th align='center' width='200'>" . Name. "</th>";
-	echo "<th align='center' width='200'>" . UserName. "</th>";
-	echo "<th align='center' width='200'>" . Password. "</th>";
-	echo "<th align='center' width='200'>" . Contact. "</th>";
-
-while($row=pg_fetch_assoc($result)){echo "<tr>";
-	echo "<td align='center' width='200'>" . $row['userid'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['name'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['username'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['password'] . "</td>";
-	echo "<td align='center' width='200'>" . $row['contactno'] . "</td>";
-	echo "</tr>";}echo "</table>";
-
-
-if (isset($_POST['submit'])){
-	$userid = $_POST['userid'];
-	$result1 = pg_query($db, "DELETE FROM users WHERE userid = '$_POST[userid]'");
-	if (!$result1)
-	{
-	echo "Update failed!!";
-	} else
-	{
-		//header('location: /cs2102grp48fds/AdminUI/webpages/2_ViewAllUsers.php');
-	echo "USER ID $_POST[userid] has been deleted successful";
-	}
-}
-
-$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-$result3 = pg_query($db, "SELECT * FROM users WHERE userid = '$_POST[userid]'");
-$row = pg_fetch_assoc($result3);
-
-if (isset($_POST['submit1']))
-{
-		//$row[0] = '8129';
-	echo "   ".$row[0];
-	
-	if (empty($row[0])){
+		echo "<table>";
 		
-	}
-	else
-		echo "ELSE: ".$row[0];
-echo "
-<ul>
-	<form name='update' method='POST'>
-	<h2>Edit User</h2>
-	<li>User ID:</li><li><input type='text' name='userid1' value='$row[userid]' disabled /></li>
-	<li>Name:</li><li><input type='text' name='name_updated' value='$row[name]'/></li>
-	<li>Username:</li><li><input type='text' name='username_updated' value='$row[username]' /></li>
-	<li>Password:</li><li><input type='text' name='password_updated' value='$row[password]' /></li>
-	<li>Contact No:</li><li><input type='text' name='contactno_updated' value='$row[contactno]' /></li>  
-	<li><input type='submit' name='update' value='Update'/></li>
-	</form>
-</ul>";
-		//$userid = $row[userid];
-}
-
-if (isset($_POST['update'])){
-	//$userid1 = $_POST[userid];
-	//$name = $_POST['name'];
-	$db5 = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-	$result5 = pg_query($db5, "UPDATE users SET name = '$_POST[name_updated]', 
-		username = '$_POST[username_updated]', password = '$_POST[password_updated]', 
-		contactno = '$_POST[contactno_updated]' 
-	WHERE userid = '$_POST[userid1]'");
-	if (!$result5)
-	{
-	echo "Update failed!!";
-	} else
-	{
-	echo "Update successful";
-	}
-}
+		echo" 
+		<tr>
+			<th>User ID</th>
+			<th>Name</th>
+			<th>Username</th>
+			<th>Password</th>
+			<th>Contact</th>
+			<th>Role</th>
+			<th>Action</th>
+		</tr>";
+		
+		while ($row = pg_fetch_row($result)) {
+		
+		$userid = $row[0];
+        $name = $row[1];
+        $username = $row[2];
+        $password = $row[3];
+        $contactno = $row[4];
+        $role = $row[5];
+				
+		echo "<tr>";
+		echo "<td align='center' width='200'>" . $userid . "</td>";
+		echo "<td align='center' width='200'>" . $name . "</td>";
+		echo "<td align='center' width='200'>" . $username . "</td>";
+		echo "<td align='center' width='200'>" . $password . "</td>";
+		echo "<td align='center' width='200'>" . $contactno . "</td>";
+		echo "<td align='center' width='200'>" . $role . "</td>";
+		
+		echo"<td><form method='post' name='myForm'>
+			 <input type='hidden' id='userid' name='userid' value='$userid'>
+			 <input type='hidden' id='name' name='name' value='$name'>		
+             <input type='submit' id='userById' name='btnViewUserById' value='Update' title='Click to view User'/>                                   
+             </form></td>";
+		
+		echo "</tr>";}
+		echo "</table>";
 
 ?>
+		
+		<?php
+		if(isset($_POST['btnViewUserById'])){
+			$userid = $_POST["userid"];
+			$_SESSION["userById"] = $userid;
+			$name = $_POST["userName"];
+			$_SESSION["userByName"] = $name;
+			echo "<script>location.href = '/cs2102grp48fds/AdminUI/webpages/8_ViewUser.php'</script>";
+		}
+		
+		?>
+		
+        </div>
+      </div>
+	  <!-- End Content -->
+	   
+    <!-- Start Footer -->
+      <footer class="footer">
+        <div class="container-fluid">
+          <nav class="float-left">
+            <ul>
+              <li>
+                <a href="https://www.creative-tim.com">
+                  PORT'S
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </footer>
+    <!-- End Footer -->
 </body>
 </html>
