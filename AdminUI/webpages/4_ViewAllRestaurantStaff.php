@@ -142,10 +142,7 @@
 //Hiding Errors 
 error_reporting(E_ERROR | E_PARSE);
 $db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-$result = pg_query($db,"SELECT u.userid, u.name, u.username, u.password, u.contactno 
-						FROM users u
-						RIGHT JOIN restaurantstaff rs  
-						ON u.userid = rs.userid");
+$result = pg_query($db,"SELECT * FROM users WHERE role = 'Restaurant Staff'");
 echo "<table>";
 	echo "<th align='center' width='200'>" . Id . "</th>";
 	echo "<th align='center' width='200'>" . Name. "</th>";

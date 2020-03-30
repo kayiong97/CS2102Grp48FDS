@@ -184,20 +184,26 @@ if (isset($_POST['submitCreate']))
   $query5 = "SELECT userid FROM Users ORDER BY userid DESC LIMIT 1";  
   $num = $query5;
 
-if ($_POST['role'] == "FDSManager"){
-    $query1 = "INSERT INTO fdsmanager(userid) VALUES ($num)";
+// if ($_POST['role'] = "FDSManager"){$
+//     $query1 = "INSERT INTO fdsmanager(userid) VALUES ($num)";
 
-} elseif ($_POST['role'] == "Restaurant Staff"){
-    $query2 = "INSERT INTO restaurantstaff(userid) VALUES ($num)";
+// } elseif ($_POST['role'] = "Restaurant Staff"){
+//     $query2 = "INSERT INTO restaurantstaff(userid) VALUES ($num)";
 
-} elseif ($_POST['role'] == "partTimeRider"){
-   $query3 = "INSERT INTO parttimerider(riderid) VALUES ($num)";
+// } elseif ($_POST['role'] = "partTimeRider"){
+//    $query3 = "INSERT INTO parttimerider(riderid) VALUES ($num)";
 
-} elseif($_POST['role'] == "FullTimeRider"){
-  $query4 = "INSERT INTO fulltimerider(riderid) VALUES ($num)";
-}
+// } elseif($_POST['role'] = "FullTimeRider"){
+//   $query4 = "INSERT INTO fulltimerider(riderid) VALUES ($num)";
+// }
 
 $result = pg_query($query); 
+// $result1 = pg_query($query1); 
+// $result2 = pg_query($query2); 
+// $result3 = pg_query($query3); 
+// $result4 = pg_query($query4); 
+// $result5 = pg_query($query5); 
+
 if (!$result)
         {
         echo "Insert Failed!!";

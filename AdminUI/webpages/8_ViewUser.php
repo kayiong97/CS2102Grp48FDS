@@ -181,7 +181,7 @@
 				</table>
 				</form>
 			</ul>";
-				echo " SUBMIT ****** User Name: ".$_SESSION[ "userByName"];
+				
 			//}
 			}
 			
@@ -195,10 +195,10 @@
 					WHERE userid = '$userid'");
 				if (!$result1)
 				{
-				echo "Update failed!!";
+				echo " Update failed!!";
 				} else
 				{
-				echo "Update successfull;";
+				echo " Update successfull";
 				}
 			}
 
@@ -209,10 +209,10 @@
 				$result2 = pg_query($db, "DELETE FROM Users WHERE userid = '$userid'");
 				if (!$result2)
 				{
-				echo "Delete failed!!";
+				echo " Delete failed!!";
 				} else
 				{
-				echo "Delete successfull;";
+				echo " Delete successful ";
 				}
 			}
 		?>
