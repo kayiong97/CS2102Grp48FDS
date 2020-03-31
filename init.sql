@@ -29,6 +29,7 @@ CREATE TABLE users (
 	username varchar(100) UNIQUE NOT NULL,
 	password varchar(100) NOT NULL,
 	contactNo varchar(8) NOT NULL,
+	role varchar(20) NOT NULL,
 	PRIMARY KEY (userId) 
 );
 
@@ -64,8 +65,17 @@ CREATE TABLE fullTimeRider (
 
 CREATE TABLE weeklyWorkSchedule (
 	weeklyWsId integer GENERATED ALWAYS AS IDENTITY,
+    operateStartTime TimeStamp,
+    operateEndTime TimeStamp,
+    breakStartTime TimeStamp,
+    breakEndTime TimeStamp,
+    day integer,
+    month integer,
+    year integer,
+    duration integer,
 	PRIMARY KEY(weeklyWsId)
 );
+
 
 CREATE TABLE shift (
 	shiftId integer GENERATED ALWAYS AS IDENTITY,
@@ -74,13 +84,17 @@ CREATE TABLE shift (
 
 CREATE TABLE workingDays (
 	workingDayId integer GENERATED ALWAYS AS IDENTITY,
+	workingday integer,
+	workingdayhours integer,
 	PRIMARY KEY (workingDayId)
 );
+
 
 CREATE TABLE ftOwns (
 	riderId integer,
 	workingDayId integer,
 	shiftId integer,
+	month integer,
 	PRIMARY KEY (riderId, workingDayId, shiftId),
 	FOREIGN KEY (riderId) REFERENCES fullTimeRider,
 	FOREIGN KEY (workingDayId) REFERENCES workingDays,
@@ -121,6 +135,7 @@ CREATE TABLE restaurantFood (
 	availabilityStatus BOOLEAN DEFAULT FALSE,
 	restaurantId integer,
 	dailyLimit integer,
+	image OID,
 	PRIMARY KEY (name, restaurantId),
 	FOREIGN KEY (restaurantId) REFERENCES restaurant ON DELETE CASCADE
 );
@@ -157,17 +172,20 @@ CREATE TABLE payment (
 
 CREATE TABLE completes (
 	completeId integer,
+    completedDateTime TimeStamp,
 	restaurantId integer,
 	riderId integer,
 	customerId integer,
 	ratingScale integer,
 	reviewDetails varchar(500),
 	paymentId integer,
+	orderId integer,
 	PRIMARY KEY (completeId, restaurantId, riderId),
 	FOREIGN KEY (customerId) REFERENCES customers,
 	FOREIGN KEY (paymentId) REFERENCES payment,
 	FOREIGN KEY (riderId) REFERENCES rider,
-	FOREIGN KEY (restaurantId) REFERENCES restaurant
+	FOREIGN KEY (restaurantId) REFERENCES restaurant,
+	FOREIGN KEY (orderId) REFERENCES orders
 );
 
 CREATE TABLE stores (
@@ -191,6 +209,10 @@ CREATE TABLE delivery (
 	deliveryLocation varchar(500) NOT NULL,
 	customerId integer,
 	orderedTimestamp timestamp,
+    riderId integer,
+    ordersId integer,
+    FOREIGN KEY (ordersId) REFERENCES orders,
+    FOREIGN KEY (riderId) REFERENCES rider,
 	FOREIGN KEY (customerId) REFERENCES customers
 );
 
@@ -215,9 +237,31 @@ INSERT INTO restaurantFood(price, name, category, information, availabilityStatu
 INSERT INTO restaurant(name, contactNo, address, area, minMonetaryAmount) values('Playmade', '63723104', '22 Upper Paya Lebar Road S380290', 'East', 5);
 INSERT INTO restaurantFood(price, name, category, information, availabilityStatus, restaurantId, dailyLimit) values(3.5, 'Chrysanthemum Tea', 'Bubble Tea', 'Freshly brewed chrysanthemum tea', true, 4, 200);
 
-INSERT INTO users(name, username, password, contactNo) values('Lee Xiao Long', 'leexl', 'password', '81110111');
-INSERT INTO users(name, username, password, contactNo) values('Lee Xiao Bin', 'leexb', 'password', '81110112');
-INSERT INTO users(name, username, password, contactNo) values('Lee Xiao Kun', 'leexk', 'password', '81110113');
+INSERT INTO users(name, username, password, contactNo, role) values('Lee Xiao Yi', 'leexYi', 'password', '81110111', 'Restaurant Staff');
+INSERT INTO users(name, username, password, contactNo, role) values('Lee Xiao Er', 'leexEr', 'password', '81110112', 'Restaurant Staff');
+INSERT INTO users(name, username, password, contactNo, role) values('Lee Xiao San', 'leexSan', 'password', '81110113', 'FDSManager');
+INSERT INTO users(name, username, password, contactNo, role) values('Lim Xiao Si', 'limxSi', 'password', '81110114', 'FDSManager');
+INSERT INTO users(name, username, password, contactNo, role) values('Lim Xiao Wu', 'limxWu', 'password', '81110115', 'PartTimeRider');
+INSERT INTO users(name, username, password, contactNo, role) values('Lim Xiao Liu', 'limxLiu', 'password', '81110116', 'PartTimeRider');
+INSERT INTO users(name, username, password, contactNo, role) values('Tan Xiao Qi', 'tanxQi', 'password', '81110117', 'FullTimeRider');
+INSERT INTO users(name, username, password, contactNo, role) values('Tan Xiao Ba', 'tanxBa', 'password', '81110118', 'FullTimeRider');
+
+INSERT INTO restaurantStaff(userId) VALUES (1);
+INSERT INTO restaurantStaff(userId) VALUES (2);
+
+INSERT INTO fdsManager(userId) VALUES (3);
+INSERT INTO fdsManager(userId) VALUES (4);
+
+INSERT INTO rider(riderId) VALUES (5);
+INSERT INTO rider(riderId) VALUES (6);
+INSERT INTO rider(riderId) VALUES (7);
+INSERT INTO rider(riderId) VALUES (8);
+
+INSERT INTO partTimeRider(riderId, weeklyBaseSalary) VALUES (5, 1500);
+INSERT INTO partTimeRider(riderId, weeklyBaseSalary) VALUES (6, 2500);
+
+INSERT INTO fullTimeRider(riderId, monthlyBaseSalary) VALUES (7, 3800);
+INSERT INTO fullTimeRider(riderId, monthlyBaseSalary) VALUES (8, 4800);
 
 INSERT INTO customers(accumulatedPoints, userId) values(100, 1);
 INSERT INTO customers(accumulatedPoints, userId) values(200, 2);
@@ -276,11 +320,9 @@ INSERT INTO restaurantFood(foodId, price, name, category, information, availabil
 
 INSERT INTO restaurant(restaurantId, name, contactNo, address, area, minMonetaryAmount) values(13, 'Playmade', '63723104', '22 Upper Paya Lebar Road S380290', 'East', 5);
 INSERT INTO restaurantFood(foodId, price, name, category, information, availabilityStatus, restaurantId) values(14, 3.5, 'Chrysanthemum Tea', 'Bubble Tea', 'Freshly brewed chrysanthemum tea', true, 13);
+*/
 
-INSERT INTO users(userId, name, username, password, contactNo) values(1, 'Lee Xiao Long', 'leexl', 'password', '81110111');
-INSERT INTO users(userId, name, username, password, contactNo) values(2, 'Lee Xiao Bin', 'leexb', 'password', '81110112');
-INSERT INTO users(userId, name, username, password, contactNo) values(3, 'Lee Xiao Kun', 'leexk', 'password', '81110113');
-
+/*
 INSERT INTO customers(customerId, accumulatedPoints, userId) values(1, 100, 1);
 INSERT INTO customers(customerId, accumulatedPoints, userId) values(2, 200, 2);
 INSERT INTO customers(customerId, accumulatedPoints, userId) values(3, 300, 3);

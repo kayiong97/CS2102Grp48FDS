@@ -11,7 +11,7 @@ li {listt-style: none;}
 <h2>Enter information regarding restaurant</h2>
 <ul>
 	<form name="insert" action="createRestaurants.php" method="POST" >
-		<li>Restaurant ID:</li><li><input type="text" name="restaurant_id" /></li>
+		<li>Restaurant ID:</li><li><input type="text" name="restaurant_id" disabled/></li>
 		<li>Name:</li><li><input type="text" name="name" /></li>
 		<li>Contact Number:</li><li><input type="text" name="contactNo" /></li>
 		<li>Address:</li><li><input type="text" name="address" /></li>
@@ -25,7 +25,7 @@ li {listt-style: none;}
 
 <?php
 $db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-$query = "INSERT INTO restaurant VALUES ('$_POST[restaurant_id]','$_POST[name]',
+$query = "INSERT INTO restaurant(name, contactno, address, area, minmonetaryamount) VALUES ('$_POST[name]',
 '$_POST[contactNo]','$_POST[address]','$_POST[area]',
 '$_POST[minMonetaryAmount]')";
 $result = pg_query($query); 

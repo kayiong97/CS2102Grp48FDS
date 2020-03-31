@@ -116,6 +116,7 @@
             </div>
         </section>
 
+
 <style>
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -125,8 +126,7 @@
   // font-family: arial;
   padding: 5px;
   min-width: 300px;
-  min-height: 500px;
-  max-height: 500px;
+
 }
 
 .price {
@@ -156,65 +156,50 @@
 
                 <div class="container">
                     <div class="row">
-                        <h2><u>>> Restaurants</u></h2>
+                        <h2><u>>> Foods <?php echo "(".$_SESSION[ "viewFoodByRestaurantName"].")"; ?></u></h2> 
 
                         <div class="col-md-6 col-sm-12">
                             <div class="about-info">
                                 <?php
-                                
-                                if($_POST){
-    if(isset($_POST['btnViewFoodBasedOnRestaurant'])){
-        $restaurantName = $_POST["btnViewFoodBasedOnRestaurant"];
-        $_SESSION["viewFoodByRestaurantName"] = $restaurantName;
-        echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewFoodByRestaurant.php'</script>";
-    }
-}
-
+                                                                                             
+                                    if( isset( $_SESSION[ "viewFoodByRestaurantName"] ))
+                                    {
+                                        $restaurantName = $_SESSION["viewFoodByRestaurantName"];
+            
                                         $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-                                        $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount FROM restaurant r JOIN restaurantFood rf ON r.restaurantId = rf.restaurantId ORDER BY r.name ASC;";
+                                        $query = "SELECT distinct rf.price, rf.name, rf.information, rf.availabilitystatus, rf.dailylimit FROM restaurantfood rf INNER JOIN restaurant r ON rf.restaurantid = r.restaurantid WHERE r.name = '$restaurantName'";
                                         $res = pg_query($link, $query);
                                         
-										$row_count=0;
-										$col_count=0;
-                                        
-										echo "<table>";
+                                        echo "<table>";
                                         echo "<tr>";
                                         while ($row = pg_fetch_row($res)) {
-											if($row_count%4==0){
-												echo "<tr>";
-												$col_count=1;
-											}
-                                            $restaurantName = $row[0];
-                                            $contactNo = $row[1];
-                                            $address = $row[2];
-                                            $area = $row[3];
-                                            $minMonetaryAmount = $row[4];
-                                                                                  
-                                                echo 
+                                            $name = $row[1];
+                                            $information = $row[2];
+                                            $price = $row[0];
+                                            $availabilitystatus = $row[3];
+                                            $dailylimit = $row[4];                                        
+                                        										
+										echo 
                                                 "<form method='post' name='myForm'>
                                                 <td><div class='card'>
                                                 <img src='/cs2102grp48fds/CustomerUI/assets/images/restaurants/$restaurantName.jpg' alt='$restaurantName' style='width: 100%; height: 200px;'>
-                                                <p><input type='submit' id='viewFoodButton' name='btnViewFoodBasedOnRestaurant' value='$restaurantName' title='Click to view food sold'/></p>
+                                                <p><input type='submit' id='viewFoodButton' name='btnViewFoodBasedOnRestaurant' value='$name'/></p>
                                                 
-                                                <h3>$contactNo</h3>
-                                                <h3>$address ($area)</h3>
-                                                <h3>Minimum amount: $$minMonetaryAmount</h3>
+                                                <h3>Details: $information</h3>
+                                                <h3>Price: $$price</h3>
+												<h3>Status: $availabilitystatus</h3>
+												<h3>Limit: $dailylimit</h3>
                                                 </div></td>
-                                                </form>";
-											?>
-                                        <?php
-											if($col_count==4){
-											   echo "</tr>";
-											}
-											$row_count++; 
-											$col_count++; 
-										}
-										?>
-										</table>
+                                                </form>"; 
+										}		
+                                        echo "</tr>";
+                                        echo "</table>";
+                                    
+                                    }
+                                ?>
                             </div>
                         </div>
-
 
                     </div>
                 </div>
