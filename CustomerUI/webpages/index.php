@@ -1,14 +1,19 @@
 ﻿<?php
     session_start();
 
-    if ( !empty( $_SESSION["username"] ) )
-    {
-        
+if(isset($_POST['btnSearch'])){
+    
+    $address=($_POST["address"]);
+    
+    $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+    $query = "SELECT r.name, r.address FROM restaurant r WHERE substring(RIGHT(r.address, 6) from 0 for 3) = LEFT('$address', 2);";
+    $res = pg_query($link, $query);
+    
+    while ($row = pg_fetch_row($res)) {
+        echo "$row[0] is around your area: $row[1] <br/>";
     }
-    else
-    {
-        
-    }
+}
+
 ?>
 
     <!DOCTYPE html>
@@ -98,10 +103,12 @@
                                 <div class="col-md-8 col-sm-12">
                                     <h3>PORT's Food Delivery Service</h3>
                                     <h1>Our mission is to provide an unforgettable experience</h1>
-
-                                    <input type="text" placeholder="Enter postal code" class="section-btn btn btn-default smoothScroll" style="background: white" />
-
-                                    <a href="#team" class="section-btn btn btn-default smoothScroll">Search</a>
+                                    
+                                    <form method="POST">
+                                        <input type="text" placeholder="Enter postal code" class="section-btn btn btn-default smoothScroll" style="background: white" name="address" />
+                                        <button type="submit" name="btnSearch" class="section-btn btn btn-default smoothScroll">Search</button>
+                                    </form>
+                                    
                                 </div>
                             </div>
                         </div>
