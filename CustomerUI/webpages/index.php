@@ -6,11 +6,24 @@ if(isset($_POST['btnSearch'])){
     $address=($_POST["address"]);
     
     $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-    $query = "SELECT r.name, r.address FROM restaurant r WHERE substring(RIGHT(r.address, 6) from 0 for 3) = LEFT('$address', 2);";
+    $query = "SELECT r.name, r.address, r.restaurantId FROM restaurant r WHERE substring(RIGHT(r.address, 6) from 0 for 3) = LEFT('$address', 2);";
     $res = pg_query($link, $query);
     
+    $listOfRestaurantIdToBeRetrievedArray = array();
+
     while ($row = pg_fetch_row($res)) {
         echo "$row[0] is around your area: $row[1] <br/>";
+        array_push($listOfRestaurantIdToBeRetrievedArray, $row[2]);
+    }
+    //print_r($listOfRestaurantIdToBeRetrievedArray);
+    
+    $_SESSION["postalCodeEntered"] = $_POST['address'];
+    $_SESSION["restaurantsBasedOnPostalCode"] = $listOfRestaurantIdToBeRetrievedArray;
+    
+    if ($listOfRestaurantIdToBeRetrievedArray == null) {
+        echo "<script type='text/javascript'>alert('Sorry, there is no restaurants to deliver to the postal code entered. ');</script>";
+    } else {
+        header('Location: /cs2102grp48fds/CustomerUI/webpages/viewRestaurantsByPostalCode.php');
     }
 }
 
