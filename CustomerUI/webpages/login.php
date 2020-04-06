@@ -7,7 +7,7 @@ if(isset($_POST['btnLogin'])){
     $username=($_POST["username"]);
     $password=($_POST["password"]);
     $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-    $query = "SELECT u.username, u.password FROM customers c JOIN users u on c.customerId = u.userId WHERE u.username = '$username' and u.password = '$password';";
+    $query = "SELECT u.username, u.password FROM customers c JOIN users u on c.userId = u.userId WHERE u.username = '$username' and u.password = '$password';";
     $res = pg_query($link, $query);
     
     while ($row = pg_fetch_row($res)) {
@@ -15,8 +15,8 @@ if(isset($_POST['btnLogin'])){
             $_SESSION["username"] = $username;
             header('Location: /cs2102grp48fds/CustomerUI/webpages/index.php');
         }
+        
     }
-    
     echo "Sorry, you have entered incorrect username/password.";     
 }
 

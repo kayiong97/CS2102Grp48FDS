@@ -171,15 +171,16 @@ CREATE TABLE payment (
 );
 
 CREATE TABLE completes (
-	completeId integer,
+	completeId integer GENERATED ALWAYS AS IDENTITY,
     completedDateTime TimeStamp,
 	restaurantId integer,
 	riderId integer,
 	customerId integer,
-	ratingScale integer,
-	reviewDetails varchar(500),
+	ratingsForDelivery integer default 0,
+	reviewDescriptionForOrder varchar(500) default null,
 	paymentId integer,
 	orderId integer,
+	hasAskedForReviewRating boolean default false,
 	PRIMARY KEY (completeId, restaurantId, riderId),
 	FOREIGN KEY (customerId) REFERENCES customers,
 	FOREIGN KEY (paymentId) REFERENCES payment,
@@ -246,6 +247,10 @@ INSERT INTO users(name, username, password, contactNo, role) values('Lim Xiao Li
 INSERT INTO users(name, username, password, contactNo, role) values('Tan Xiao Qi', 'tanxQi', 'password', '81110117', 'FullTimeRider');
 INSERT INTO users(name, username, password, contactNo, role) values('Tan Xiao Ba', 'tanxBa', 'password', '81110118', 'FullTimeRider');
 
+INSERT INTO users(name, username, password, contactNo, role) values('Lee Xiao Long', 'leexl', 'password', '81234567', 'Customer');
+INSERT INTO users(name, username, password, contactNo, role) values('Lee Xiao Bin', 'leexb', 'password', '81234568', 'Customer');
+INSERT INTO users(name, username, password, contactNo, role) values('Lee Xiao Hui', 'leexh', 'password', '81234569', 'Customer');
+
 INSERT INTO restaurantStaff(userId) VALUES (1);
 INSERT INTO restaurantStaff(userId) VALUES (2);
 
@@ -263,24 +268,24 @@ INSERT INTO partTimeRider(riderId, weeklyBaseSalary) VALUES (6, 2500);
 INSERT INTO fullTimeRider(riderId, monthlyBaseSalary) VALUES (7, 3800);
 INSERT INTO fullTimeRider(riderId, monthlyBaseSalary) VALUES (8, 4800);
 
-INSERT INTO customers(accumulatedPoints, userId) values(100, 1);
-INSERT INTO customers(accumulatedPoints, userId) values(200, 2);
-INSERT INTO customers(accumulatedPoints, userId) values(300, 3);
+INSERT INTO customers(accumulatedPoints, userId) values(100, 9);
+INSERT INTO customers(accumulatedPoints, userId) values(200, 10);
+INSERT INTO customers(accumulatedPoints, userId) values(300, 11);
 
 INSERT INTO orders(totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(70, '2019-6-20 14:23:54', '234 Seng Keng Avenue 3 #21-14 S201010', 10);
 INSERT INTO delivery(deliveryLocation, orderedTimestamp) values('234 Seng Keng Avenue 3 #21-14 S201010', current_timestamp);
-INSERT INTO stores(customerId, deliveryId) values (2, 3);
+INSERT INTO stores(customerId, deliveryId) values (1, 3);
 
 INSERT INTO orders(totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(50, '2019-5-19 10:23:54', '123 Barney Road #01-04 S101010', 5);
 INSERT INTO delivery(deliveryLocation, orderedTimestamp) values('123 Barney Road #01-04 S101010', current_timestamp);
-INSERT INTO stores(customerId, deliveryId) values (1, 1);
+INSERT INTO stores(customerId, deliveryId) values (2, 1);
 
 INSERT INTO orders(totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(60, '2019-5-20 12:23:54', '123 Barney Road #01-04 S101010', 5);
 INSERT INTO delivery(deliveryLocation, orderedTimestamp) values('123 Barney Road #01-04 S101010', current_timestamp);
-INSERT INTO stores(customerId, deliveryId) values (1, 2);
+INSERT INTO stores(customerId, deliveryId) values (3, 2);
 
 INSERT INTO orders(totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(100, '2019-5-24 12:23:54', '34 Computing Drive #4-21 S301010', 8);
@@ -290,12 +295,12 @@ INSERT INTO stores(customerId, deliveryId) values (1, 4);
 INSERT INTO orders(totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(80, '2019-5-26 12:23:54', '42 Clementi Road S103391', 8);
 INSERT INTO delivery(deliveryLocation, orderedTimestamp) values('42 Clementi Road S103391', current_timestamp);
-INSERT INTO stores(customerId, deliveryId) values (1, 5);
+INSERT INTO stores(customerId, deliveryId) values (2, 5);
 
 INSERT INTO orders(totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(20, '2019-6-10 12:23:54', '34 Kim Cheng Street #01-21 S160110', 4);
 INSERT INTO delivery(deliveryLocation, orderedTimestamp) values('34 Kim Cheng Street #01-21 S160110', current_timestamp);
-INSERT INTO stores(customerId, deliveryId) values (1, 6);
+INSERT INTO stores(customerId, deliveryId) values (3, 6);
 
 INSERT INTO orders(totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(50, '2019-10-10 20:23:54', '139 Boon Tiong Road S169920', 4);
@@ -305,8 +310,33 @@ INSERT INTO stores(customerId, deliveryId) values (1, 7);
 INSERT INTO orders(totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(100, '2019-10-21 15:23:54', '795 Geylang Road #01-01 S389678', 7);
 INSERT INTO delivery(deliveryLocation, orderedTimestamp) values('795 Geylang Road #01-01 S389678', current_timestamp);
-INSERT INTO stores(customerId, deliveryId) values (1, 8);
-
+INSERT INTO stores(customerId, deliveryId) values (2, 8);
+	
+INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Cash', 30, 1);
+INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Cash', 40, 2);
+INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Cash', 50, 3);
+INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Visa', 55, 4);
+INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Visa', 60, 5);
+INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Masters', 35, 6);	
+INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Masters', 45, 7);
+INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Masters', 100, 8);
+	
+INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
+values('2019-10-21 15:23:54', 1, 5, 1, 0, null, 1, 1, true);
+INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
+values('2019-10-25 15:23:54', 2, 6, 2, 0, null, 2, 2, true);
+INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
+values('2019-10-28 15:23:54', 3, 7, 3, 0, null, 3, 3, true);
+INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
+values('2019-11-10 15:23:54', 4, 8, 1, 0, null, 4, 4, true);
+INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
+values('2019-11-11 15:23:54', 1, 5, 2, 0, null, 5, 5, true);
+INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating)  
+values('2019-11-11 18:23:54', 2, 6, 3, 0, null, 6, 6, false);
+INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating)  
+values('2019-11-12 15:23:54', 3, 7, 1, 0, null, 7, 7, false);
+INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
+values('2019-11-15 15:23:54', 4, 8, 2, 0, null, 8, 8, false);
 /*
 INSERT INTO restaurant(restaurantId, name, contactNo, address, area, minMonetaryAmount) values(10, 'Rochor Beancurd', '63723101', '787 Geylang Road S389660', 'East', 8);
 INSERT INTO restaurantFood(foodId, price, name, category, information, availabilityStatus, restaurantId) values(10, 2.5, 'Soya Beancurd', 'Dessert', 'Homemade soya beancurd, freshly made daily', true, 10);
