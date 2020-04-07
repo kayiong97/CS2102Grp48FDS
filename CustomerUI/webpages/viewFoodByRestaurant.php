@@ -188,8 +188,11 @@
                                                 
                                                 <h3>Details: $information</h3>
                                                 <h3>Price: $$price</h3>
-												<h3>Status: $availabilitystatus</h3>
+												//<h3>Status: $availabilitystatus</h3>
 												<h3>Limit: $dailylimit</h3>
+                                                
+                                                <input type='submit' id='btnAddToCart' name='btnAddToCart' value='Add to Cart' style='background-color:orange'/>
+                                                <input type='hidden' id='foodToAddToCart' name='foodToAddToCart' value='$name'/>
                                                 </div></td>
                                                 </form>"; 
 										}		
@@ -197,6 +200,18 @@
                                         echo "</table>";
                                     
                                     }
+                                ?>
+                                
+                                <?php
+                                
+                                    if(isset($_POST['btnAddToCart'])){
+                                        
+                                        if (isset($_POST[''])){
+                                            $foodToAddToCart = $_POST['foodToAddToCart'];
+                                            echo 'foodToAddToCart: '.$foodToAddToCart;
+                                        }
+                                    }
+                                
                                 ?>
                             </div>
                         </div>
