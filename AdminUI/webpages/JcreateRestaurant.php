@@ -91,6 +91,13 @@
 			</li>
 			
 			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllPromotions.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Promotions</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
 				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/7_ViewAllCustomerOrder.php">
 				  <i class="material-icons">dashboard</i>
 				  <p>Customer Order</p>

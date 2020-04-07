@@ -1,11 +1,7 @@
-<?php 
-	session_start();
-?>
-
 <!DOCTYPE html>
-<head> 
-	<title>Update/Delete Restaurant Details</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<head>
+<title>Create</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<style>
 		.button {
 			background-color: #4CAF50; /* Green */
@@ -42,7 +38,9 @@
 </head>
 
 <body>
-<div class="wrapper ">
+
+<body>
+  <div class="wrapper ">
     <div class="sidebar" data-color="purple" data-background-color="white">
       <div class="logo">
         <a class="simple-text logo-mini">
@@ -118,7 +116,7 @@
 	  <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="javascript:;">Update/Delete Restaurant Details <?php echo "(Restaurant Name: ".$_SESSION[ "storeRestaurantByName"].")"; ?></a>
+            <a class="navbar-brand" href="javascript:;">Create New Food</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -143,99 +141,57 @@
       </nav>	  
       <!-- End Navbar -->
 	  
-	   <!-- Start Content -->
+	  <!-- Start Content -->
       <div class="content">
         <div class="container-fluid">
        
-		<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllRestaurants.php">
+		<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllPromotions.php">
 				  <i class="material-icons">dashboard</i>
 				  Back
 		</a>
 		
-		<?php
-			if( isset( $_SESSION[ "storeRestaurantById"] ))
-			{
-			$restaurantid = $_SESSION["storeRestaurantById"];
-
-			$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-			$result = pg_query($db, "SELECT * FROM restaurant WHERE restaurantid = $restaurantid");
-			$row = pg_fetch_assoc($result);
-
-
-			/*if (isset($_POST['submit']))
-			{
-				//$row[0] = '8129';
-				echo "   ".$row[0];
+		<form name="insert" action="JcreatePromotion.php" method="POST" >
+			<table>
+			<td><label for="restaurant_id">Restaurant Name:</label></td>
+			<td><select id="restaurantid" name="restaurantid">
+				<?php
+				$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+				$result = pg_query($db,"SELECT restaurantid, name FROM restaurant");
 				
-				if (empty($row[0])){
-					echo "IF: contactNo: ".$row['contactNo'];
-				}
-				else
-					echo "ELSE: ".$row[0];
-			*/	
-			echo "
-			<ul>
-				<form name='update' action='JretrieveRestaurant.php' method='POST' >
-				<table>
-					<td><label for='restaurant_id'>Restaurant ID:</label></td>
-					<td><input type='text' name='restaurant_id_updated' value='$row[restaurantid]' disabled /></td></tr>
-					
-					<td><label for='name'>Name:</label></td>
-					<td><input type='text' name='name_updated' value='$row[name]' /></td></tr>
-					
-					<td><label for='contactNo'>Contact Number:</label></td>
-					<td><input type='text' name='contactNo_updated' value='$row[contactno]' /></td></tr>
-					
-					<td><label for='address'>Address:</label></td>
-					<td><input type='text' name='address_updated' value='$row[address]' /></td></tr>
-					
-					<td><label for='area'>Area:</label></td>
-					<td><input type='text' name='area_updated' value='$row[area]' /></td></tr>
-					
-					<td><label for='minMonetaryAmount'>Min Monetary Amount:</label></td>
-					<td><input type='number' name='minMonetaryAmount_updated' value='$row[minmonetaryamount]' /></td></tr>
-					
-					<td><input type='submit' name='new' value='Update'/></td>
-					<td><input type='submit' name='delete' value='Delete'/></td>
-				</table>
-				</form>
-			</ul>";
-				echo " SUBMIT ****** Restaurant Name: ".$_SESSION[ "storeRestaurantByName"];
-			//}
-			}
+				while ($row = pg_fetch_array( $result)) { echo "<option value=".$row['restaurantid'].">" . $row['name'] . "</option>"; } 
+				
+				?>
+			</select></td></tr>
 			
-			if (isset($_POST['new']))
-			{
-				
-				$restaurantId = $_SESSION['storeRestaurantById'];
-				echo " NEW ****** restaurantId: ".$_SESSION['storeRestaurantById'];
-				
-				$result1 = pg_query($db, "UPDATE restaurant SET name = '$_POST[name_updated]', 
-				contactno = '$_POST[contactNo_updated]', address = '$_POST[address_updated]',area = '$_POST[area_updated]',
-				minmonetaryamount = '$_POST[minMonetaryAmount_updated]' WHERE restaurantid = '$restaurantId'");
-				if (!$result1)
-				{
-				echo "Update failed!!";
-				} else
-				{
-				echo "Update successfull;";
-				}
-			}
+			<td><label for="information">Promotion Name/Information:</label></td>
+			<td><input type="text" name="information" /></td></tr>
+			
+			<td><label for="promostartdate">Start Date:</label></td>
+			<td><input type="date" id="promostartdate" name="promostartdate"/><td></tr>
+			
+			<td><label for="promoenddate">End Date:</label></td>
+			<td><input type="date" id="promoenddate" name="promoenddate"/><td></tr>
+			
+			<td><label for="discountamount">Discount Amount:</label></td>
+			<td><input type="number" name="discountamount" step=".01"/><td></tr>
+			
+			<td><input type="submit" name="submitCreate"/></td>
+			</table>
+		</form>
 
-			if (isset($_POST['delete'])){
-				$restaurantId = $_SESSION['storeRestaurantById'];
-				echo " NEW ****** restaurantId: ".$_SESSION['storeRestaurantById'];
-				
-				$result2 = pg_query($db, "DELETE FROM restaurant WHERE restaurantid = '$restaurantId'");
-				if (!$result2)
-				{
-				echo "Delete failed!!";
-				} else
-				{
-				echo "Delete successfull;";
-				}
-			}
-		?>
+<?php
+//$uploaddir = '/xampp/htdocs/CS2102Grp48FDS/CustomerUI/webpages';
+//$uploadfile = $uploaddir . basename($_FILES['image']);
+
+$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+
+if (isset($_POST['submitCreate']))
+{
+$query = "INSERT INTO promotion(information, promostartdate, promoenddate, discountamount, restaurantid) VALUES ('$_POST[information]',
+'$_POST[promostartdate]','$_POST[promoenddate]','$_POST[discountamount]','$_POST[restaurantid]')";
+$result = pg_query($query); 
+}
+?>
 
         </div>
       </div>
@@ -258,13 +214,5 @@
 	  <!-- End Footer -->
     </div>
   </div>
-  
-	<!--<h2>Enter restaurant_id and enter <?php echo "(".$_SESSION[ "storeRestaurantById"].")"; ?> <?php echo "(".$_SESSION[ "storeRestaurantByName"].")"; ?></h2>
-	<ul>
-	<form name="display" action="retrieveRestaurants.php" method="POST" >
-	<li>Restaurant ID:</li><li><input type="text" name="restaurantid" /></li>
-	<li><input type="submit" name="submit" /></li>
-	</form>
-	</ul>-->
 </body>
-</html>
+</html>	

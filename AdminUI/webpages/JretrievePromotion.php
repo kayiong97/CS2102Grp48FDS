@@ -4,7 +4,7 @@
 
 <!DOCTYPE html>
 <head> 
-	<title>Update/Delete Restaurant Details</title>
+	<title>Update/Delete Food Details</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<style>
 		.button {
@@ -118,7 +118,7 @@
 	  <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="javascript:;">Update/Delete Restaurant Details <?php echo "(Restaurant Name: ".$_SESSION[ "storeRestaurantByName"].")"; ?></a>
+            <a class="navbar-brand" href="javascript:;">Update/Delete Promotion Details <?php echo "(Promotion ID: ".$_SESSION[ "storePromotionById"].")"; ?></a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -147,72 +147,63 @@
       <div class="content">
         <div class="container-fluid">
        
-		<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllRestaurants.php">
+		<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllPromotions.php">
 				  <i class="material-icons">dashboard</i>
 				  Back
 		</a>
 		
 		<?php
-			if( isset( $_SESSION[ "storeRestaurantById"] ))
+			if( isset( $_SESSION["storePromotionById"] ))
 			{
-			$restaurantid = $_SESSION["storeRestaurantById"];
-
+			$promotionid = $_SESSION["storePromotionById"];
+			
 			$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-			$result = pg_query($db, "SELECT * FROM restaurant WHERE restaurantid = $restaurantid");
+			$result = pg_query($db, "SELECT * FROM promotion WHERE promotionid = $promotionid");
 			$row = pg_fetch_assoc($result);
-
-
-			/*if (isset($_POST['submit']))
-			{
-				//$row[0] = '8129';
-				echo "   ".$row[0];
-				
-				if (empty($row[0])){
-					echo "IF: contactNo: ".$row['contactNo'];
-				}
-				else
-					echo "ELSE: ".$row[0];
-			*/	
+		
 			echo "
 			<ul>
-				<form name='update' action='JretrieveRestaurant.php' method='POST' >
+				<form name='update' action='JretrievePromotion.php' method='POST' >
 				<table>
+				
+					<td><label for='promotion_id'>Promotion ID:</label></td>
+					<td><input type='text' name='promotion_id_updated' value='$row[promotionid]' disabled /></td></tr>
+					
+					<td><label for='information'>Information:</label></td>
+					<td><input type='text' name='information_updated' value='$row[information]' /></td></tr>
+					
+					<td><label for='promostartdate'>Start Date:</label></td>
+					<td><input type='date' name='promostartdate_updated' value='$row[promostartdate]' /></td></tr>
+					
+					<td><label for='promoenddate'>End Date:</label></td>
+					<td><input type='date' name='promoenddate_updated' value='$row[promoenddate]' /></td></tr>
+			
+					<td><label for='discountamount'>Discount Amount:</label></td>
+					<td><input type='number' name='discountamount_updated' value='$row[discountamount]' step='.01'/></td></tr>
+					
 					<td><label for='restaurant_id'>Restaurant ID:</label></td>
 					<td><input type='text' name='restaurant_id_updated' value='$row[restaurantid]' disabled /></td></tr>
-					
-					<td><label for='name'>Name:</label></td>
-					<td><input type='text' name='name_updated' value='$row[name]' /></td></tr>
-					
-					<td><label for='contactNo'>Contact Number:</label></td>
-					<td><input type='text' name='contactNo_updated' value='$row[contactno]' /></td></tr>
-					
-					<td><label for='address'>Address:</label></td>
-					<td><input type='text' name='address_updated' value='$row[address]' /></td></tr>
-					
-					<td><label for='area'>Area:</label></td>
-					<td><input type='text' name='area_updated' value='$row[area]' /></td></tr>
-					
-					<td><label for='minMonetaryAmount'>Min Monetary Amount:</label></td>
-					<td><input type='number' name='minMonetaryAmount_updated' value='$row[minmonetaryamount]' /></td></tr>
 					
 					<td><input type='submit' name='new' value='Update'/></td>
 					<td><input type='submit' name='delete' value='Delete'/></td>
 				</table>
 				</form>
 			</ul>";
-				echo " SUBMIT ****** Restaurant Name: ".$_SESSION[ "storeRestaurantByName"];
+				echo " SUBMIT ****** Promotion ID: ".$_SESSION[ "storePromotionById"];
 			//}
 			}
 			
 			if (isset($_POST['new']))
 			{
 				
-				$restaurantId = $_SESSION['storeRestaurantById'];
-				echo " NEW ****** restaurantId: ".$_SESSION['storeRestaurantById'];
+				$promotionid = $_SESSION["storePromotionById"];			
+				echo " NEW ****** promotionid: ".$_SESSION['promotionid'];
 				
-				$result1 = pg_query($db, "UPDATE restaurant SET name = '$_POST[name_updated]', 
-				contactno = '$_POST[contactNo_updated]', address = '$_POST[address_updated]',area = '$_POST[area_updated]',
-				minmonetaryamount = '$_POST[minMonetaryAmount_updated]' WHERE restaurantid = '$restaurantId'");
+				$result1 = pg_query($db, "UPDATE promotion SET information = '$_POST[information_updated]', 
+				promostartdate = '$_POST[promostartdate_updated]', promoenddate = '$_POST[promoenddate_updated]', 
+				discountamount = '$_POST[discountamount_updated]'
+				WHERE promotionid = '$promotionid'");
+				
 				if (!$result1)
 				{
 				echo "Update failed!!";
@@ -223,10 +214,10 @@
 			}
 
 			if (isset($_POST['delete'])){
-				$restaurantId = $_SESSION['storeRestaurantById'];
-				echo " NEW ****** restaurantId: ".$_SESSION['storeRestaurantById'];
+				$promotionid = $_SESSION["storePromotionById"];			
+				echo " NEW ****** promotionid: ".$_SESSION['promotionid'];
 				
-				$result2 = pg_query($db, "DELETE FROM restaurant WHERE restaurantid = '$restaurantId'");
+				$result2 = pg_query($db, "DELETE FROM promotion WHERE promotionid = '$promotionid'");
 				if (!$result2)
 				{
 				echo "Delete failed!!";
