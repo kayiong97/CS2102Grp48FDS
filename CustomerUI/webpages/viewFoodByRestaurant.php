@@ -1,6 +1,8 @@
 ﻿<?php
     session_start();
-
+    
+//Hiding Errors 
+error_reporting(E_ERROR | E_PARSE);
 ?>
 
     <!DOCTYPE html>
@@ -217,43 +219,105 @@
                                             $foodNameToAddToCart = $_POST['foodToAddToCart'];
                                             $loggedInCustomerId = $_SESSION["loggedInCustomerId"];
                                            
-                                            //Check if this food item is in database. If it is, just update quantity
+                                            //Check if this customer has added food from other restaurant. 
+                                            //If have, then clear them and add these food from CURRENT NEW restaurant 
                                             $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-                                            $query = "SELECT sc.name, sc.quantity FROM ShoppingCart sc 
-											WHERE sc.customerId = $loggedInCustomerId AND sc.name = '$foodNameToAddToCart' ;";
-                                            $res = pg_query($link, $query);
-                                            
-                                            $quantityToBeAdded = 0;
-                                            
-                                            while ($row = pg_fetch_row($res)) {
-                                                $quantityToBeAdded = $row[1] + 1;
-                                                
-                                                echo "This food already added to cart, so jst need udpate quantity.";
-                                                 
-                                                 if ( $quantityToBeAdded != 0 ) {
-                                                    $res2 = pg_query($link, "UPDATE shoppingCart SET quantity = $quantityToBeAdded 
-                                                    WHERE customerId = $loggedInCustomerId AND name = '$foodNameToAddToCart' ;");
-                                                    
-                                                    if (!$res2) {
-                                                        echo "Update shopping cart for quantity for an item failed!!";
-                                                    } else {
-                                                        echo "Update shopping cart for quantity for an item successfull;";
-                                                    }
-                                                }
-                                                break;
-                                            }   
-											
+                                            $queryA = "WITH temp AS (
+                                                            SELECT sc.restaurantId as resId FROM ShoppingCart sc 
+                                                            WHERE sc.customerId = $loggedInCustomerId
+                                                            )
 
-												//Insert into shopping cart if THIS FOOD ITEM IS NOT EXIST IN DATABASE
-												
-												$query3 = "INSERT INTO SHOPPINGCART(quantity, customerId, name, restaurantId) 
-												VALUES(1, $loggedInCustomerId, '$foodNameToAddToCart', $restaurantIdClickedByUser) ;";
-												$res3 = pg_query($link, $query3);
-													
-												if ($res3) {
-													echo "Insertion into shopping cart is successful.";
-												}
-                                    }
+                                                            SELECT distinct sc2.restaurantId FROM ShoppingCart sc2
+                                                            WHERE $restaurantIdClickedByUser IN 
+                                                            (SELECT resId FROM temp WHERE sc2.customerId = $loggedInCustomerId AND sc2.restaurantId <> $restaurantIdClickedByUser)
+                                                        ;";
+                                            $resultA = pg_query($link, $queryA);
+                                            
+                                            if (!$resultA) {
+                                                 
+                                                //Check if this food item is in shoppingCart database. If it is, just update quantity
+                                                $query1 = "SELECT sc.name, sc.quantity FROM ShoppingCart sc 
+                                                WHERE sc.customerId = $loggedInCustomerId AND sc.name = '$foodNameToAddToCart' AND sc.restaurantId = '$restaurantIdClickedByUser' ;";
+                                                $res1 = pg_query($link, $query1);
+                                                
+                                                $quantityToBeAdded = 0;
+                                                
+                                                while ($row = pg_fetch_row($res1)) {
+                                                    $quantityToBeAdded = $row[1] + 1;
+                                                    
+                                                    //echo "This food already added to cart, so jst need udpate quantity.";
+                                                     
+                                                     if ( $quantityToBeAdded != 0 ) {
+                                                        $res2 = pg_query($link, "UPDATE shoppingCart SET quantity = $quantityToBeAdded 
+                                                        WHERE customerId = $loggedInCustomerId AND name = '$foodNameToAddToCart' AND sc.restaurantId = '$restaurantIdClickedByUser' ;");
+                                                        
+                                                        if (!$res2) {
+                                                            echo "<script> alert('Update shopping cart for quantity for an item failed!!');</script>";
+                                                        } else {
+                                                            echo "<script> alert('Update shopping cart for quantity for an item success!!');</script>";
+                                                        }
+                                                    }
+                                                    break;
+                                                }   
+                                                
+                                                //Insert into shopping cart if THIS FOOD ITEM IS NOT EXIST IN shoppingCart DATABASE
+                                                $query3 = "INSERT INTO SHOPPINGCART(quantity, customerId, name, restaurantId) 
+                                                            VALUES(1, $loggedInCustomerId, '$foodNameToAddToCart', $restaurantIdClickedByUser) ;";
+                                                $res3 = pg_query($link, $query3);
+                                                        
+                                                if ($res3) {
+                                                    echo "<script> alert('Insertion into shopping cart is successful.');</script>";
+                                                }
+                                            
+                                            } else { //Delete previous food items in cart and add these CURRENT NEW FOOD 
+                                                    $resultB = pg_query($link, "DELETE FROM shoppingCart 
+                                                    WHERE customerId = $loggedInCustomerId AND restaurantId <> $restaurantIdClickedByUser; ");
+                                                    
+                                                    if (!$resultB)
+                                                    {
+                                                        // echo "Delete failed!!";
+                                                    } else {
+                                                        // echo "Delete successfull;";
+                                                        
+                                                        //Check if this food item is in shoppingCart database. If it is, just update quantity
+                                                        $query1 = "SELECT sc.name, sc.quantity FROM ShoppingCart sc 
+                                                        WHERE sc.customerId = $loggedInCustomerId AND sc.name = '$foodNameToAddToCart' AND sc.restaurantId = '$restaurantIdClickedByUser' ;";
+                                                        $res1 = pg_query($link, $query1);
+                                                        
+                                                        $quantityToBeAdded = 0;
+                                                        
+                                                        while ($row = pg_fetch_row($res1)) {
+                                                            $quantityToBeAdded = $row[1] + 1;
+                                                            
+                                                            //echo "This food already added to cart, so jst need udpate quantity.";
+                                                             
+                                                             if ( $quantityToBeAdded != 0 ) {
+                                                                $res2 = pg_query($link, "UPDATE shoppingCart SET quantity = $quantityToBeAdded 
+                                                                WHERE customerId = $loggedInCustomerId AND name = '$foodNameToAddToCart' AND restaurantId = '$restaurantIdClickedByUser' ;");
+                                                                
+                                                                if (!$res2) {
+                                                                    echo "<script> alert('Update shopping cart for quantity for an item failed!!');</script>";
+                                                                } else {
+                                                                    echo "<script> alert('Update shopping cart for quantity for an item success!!');</script>";
+                                                                }
+                                                            } 
+                                                            break;
+                                                        }
+
+                                                            //Insert into shopping cart if THIS FOOD ITEM IS NOT EXIST IN shoppingCart DATABASE
+                                                            $query4 = "INSERT INTO SHOPPINGCART(quantity, customerId, name, restaurantId) 
+                                                                            VALUES(1, $loggedInCustomerId, '$foodNameToAddToCart', $restaurantIdClickedByUser) ;";
+                                                            $res4 = pg_query($link, $query4);
+                                                                        
+                                                            if ($res4) {
+                                                                echo "<script> alert('Insertion into shopping cart is successful.');</script>";
+                                                            }
+                                                    }
+                                                       
+                                                }
+                                            }
+                                        
+                                    
                                 
                                 ?>
                             </div>

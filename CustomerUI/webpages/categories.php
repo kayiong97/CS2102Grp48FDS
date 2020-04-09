@@ -1,11 +1,8 @@
 ﻿<?php
     session_start();
-
-    if ( !empty( $_SESSION["username"] ) )
-    {
-        
-    }
-
+    
+//Hiding Errors 
+error_reporting(E_ERROR | E_PARSE);
 ?>
 
     <!DOCTYPE html>

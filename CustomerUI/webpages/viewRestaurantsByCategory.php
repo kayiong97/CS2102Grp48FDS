@@ -165,6 +165,8 @@
                                                                 if($_POST){
     if(isset($_POST['btnViewFoodBasedOnRestaurant'])){
         $restaurantName = $_POST["btnViewFoodBasedOnRestaurant"];
+        $_SESSION["restaurantIdClickedByUser"] = $_POST["restaurantIdClickedByUser"];
+                
         $_SESSION["viewFoodByRestaurantName"] = $restaurantName;
         echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewFoodByRestaurant.php'</script>";
     }
@@ -199,6 +201,8 @@
                                                 <h3>$contactNo</h3>
                                                 <h3>$address ($area)</h3>
                                                 <h3>Minimum amount: $$minMonetaryAmount</h3>
+                                                <input type='hidden' name='restaurantIdClickedByUser' value='$row[5]'>
+                      
                                                 </div></td>
                                                 </form>"; 
                                         }

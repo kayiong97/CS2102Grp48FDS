@@ -1,10 +1,8 @@
 ﻿<?php
     session_start();
-
-    if ( !empty( $_SESSION["username"] ) )
-    {
-        
-    }
+    
+//Hiding Errors 
+error_reporting(E_ERROR | E_PARSE);
 ?>
 
     <!DOCTYPE html>
@@ -165,6 +163,8 @@
                                                                 if($_POST){
     if(isset($_POST['btnViewFoodBasedOnRestaurant'])){
         $restaurantName = $_POST["btnViewFoodBasedOnRestaurant"];
+        $_SESSION["restaurantIdClickedByUser"] = $_POST["restaurantIdClickedByUser"];
+                                           
         $_SESSION["viewFoodByRestaurantName"] = $restaurantName;
         echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewFoodByRestaurant.php'</script>";
     }
@@ -181,7 +181,7 @@
                                             
                                         foreach ($listOfRestaurantIdToBeRetrievedArray as $key => $value) {
                                             
-                                            $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount 
+                                            $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount, r.restaurantId 
                                             FROM restaurant r JOIN restaurantFood rf ON r.restaurantId = rf.restaurantId 
                                             WHERE r.restaurantId = $value ORDER BY r.name ASC;";
                                             
@@ -194,7 +194,9 @@
                                                 $address = $row[2];
                                                 $area = $row[3];
                                                 $minMonetaryAmount = $row[4];
-                                                                                      
+                                                                                
+                                                // $_SESSION["restaurantIdClickedByUser"] = $row[5];
+                                           
                                                     echo 
                                                     "<form method='post' name='myForm'>
                                                     <td><div class='card'>
@@ -204,6 +206,8 @@
                                                     <h3>$contactNo</h3>
                                                     <h3>$address ($area)</h3>
                                                     <h3>Minimum amount: $$minMonetaryAmount</h3>
+                                                    <input type='hidden' name='restaurantIdClickedByUser' value='$row[5]'>
+                      
                                                     </div></td>
                                                     </form>"; 
                                             }
