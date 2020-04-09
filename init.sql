@@ -208,10 +208,11 @@ CREATE TABLE stores (
 );
 
 CREATE TABLE creditCardDetails (
-	cardNumber integer NOT NULL,
+	cardNumber bigint NOT NULL,
 	cardHolderName varchar (100),
 	cvvNumber integer NOT NULL,
-	expiryDate date NOT NULL,
+	expiryMonth integer NOT NULL,
+	expiryYear integer NOT NULL,
 	customerId integer,
 	PRIMARY KEY (customerId, cardNumber),
 	FOREIGN KEY (customerId) REFERENCES customers ON DELETE CASCADE	
@@ -336,7 +337,19 @@ INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Visa', 60, 5);
 INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Masters', 35, 6);	
 INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Masters', 45, 7);
 INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Masters', 100, 8);
-	
+
+INSERT INTO creditCardDetails(cardNumber, cardHolderName, cvvNumber, expiryMonth, expiryYear, customerId) 
+values ('5264710324441111', 'Lee Xiao Bin', 123, 10, 2020, 2);
+
+INSERT INTO creditCardDetails(cardNumber, cardHolderName, cvvNumber, expiryMonth, expiryYear, customerId) 
+values ('5264710324442222', 'Lee Xiao Long', 123, 05, 2020, 1);
+
+INSERT INTO creditCardDetails(cardNumber, cardHolderName, cvvNumber, expiryMonth, expiryYear, customerId) 
+values ('5264710324443333', 'Lee Xiao Hui', 123, 11, 2020, 3);
+
+INSERT INTO creditCardDetails(cardNumber, cardHolderName, cvvNumber, expiryMonth, expiryYear, customerId) 
+values ('5264710324444444', 'Lee Xiao Bin', 123, 12, 2020, 2);
+
 INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
 values('2019-10-21 15:23:54', 1, 5, 1, 0, null, 1, 1, true);
 INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 

@@ -218,7 +218,13 @@ error_reporting(E_ERROR | E_PARSE);
                                             $restaurantIdClickedByUser = $_SESSION["restaurantIdClickedByUser"];
                                             $foodNameToAddToCart = $_POST['foodToAddToCart'];
                                             $loggedInCustomerId = $_SESSION["loggedInCustomerId"];
-                                           
+                                        
+                                        //If user not logged in and wants to add to cart, direct them to login
+                                        if ($loggedInCustomerId == null) {
+                                            echo "<script>alert('Please login first before placing your order. ')
+                                            window.location.href = '/cs2102grp48fds/CustomerUI/webpages/login.php';</script>";
+                                        }
+                                        
                                             //Check if this customer has added food from other restaurant. 
                                             //If have, then clear them and add these food from CURRENT NEW restaurant 
                                             $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
