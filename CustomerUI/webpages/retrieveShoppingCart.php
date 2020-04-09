@@ -382,60 +382,138 @@ td:nth-child(7), td:nth-child(5), td:nth-child(6) {
 								}	
 								}								
 								?>
-																
+								
+							<!-- 
 								<?php 
+
 								if ($_SESSION['checkoutStatus'] == 2){
-								echo"<form method='post' name='myCheckoutForm' >
-								<label for='paymentType'>Please select your payment type: </label>
-								<select name='paymentType' onchange='CreditCardInformation(this.value);'>  
-									<option value='Cash'>Cash on Delivery</option>
-									<option value='Credit Card'>Credit Card</option>								
-								  </select>
-								
-								<label for='chooseCreditCard'>Please select your Credit Card: </label>
-								<select name='chooseCreditCard' id='chooseCreditCard'>  
-									<option value='123'>123</option>
-									<option value='456'>456</option>								
-								</select>
-														
-								</br>
-								<input type='submit' value='Submit'>
-								</form>";
 								}
+								?>
+							-->
+							
+							
+								<br/><br/>    
+								<!-- DELIVEYR LOCATIONS -->
 								
+								<label for='deliveryLocations'>Please select your Delivery Locations: </label>  
+								<?php
+										$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+
+										$query2 = "select deliverylocation from delivery d
+										JOIN stores s on s.deliveryId = d.deliveryId
+										JOIN customers c on s.customerId = c.customerId
+										JOIN users u on u.userId = c.userId
+										WHERE u.username = '$username'
+										ORDER BY d.orderedTimestamp DESC LIMIT 5;";
+										$res2 = pg_query($link, $query2);
+
+										echo "<select id='mySelectDeliveryLocations' onchange='myFunctionDeliveryLocation()'>";
+										
+										echo "<option value='0'>Select Delivery Location</option>";
+												
+										while ($row = pg_fetch_row($res2)) {
+												$deliveryLocation = $row[0];
+												$_SESSION["deliveryLocation"] = $deliveryLocation;
+
+												echo "<br/> $deliveryLocation <br/>";
+												
+												echo "<option value='$deliveryLocation'>$deliveryLocation</option>";
+										}
+										echo "</select>";
+										
+										echo "<script>
+											function myFunctionDeliveryLocation() {
+												var x = document.getElementById('mySelectDeliveryLocations').value;
+												if (x == 0) {
+													document.getElementById('txtNewAddress').disabled = true;
+												}
+												else
+													document.getElementById('txtNewAddress').disabled = false;
+											}
+											</script>";
 								?>
 								
-								<script language="javascript" type="text/javascript">
-								function dynamicdropdown(listindex)
-								{
-									switch (listindex)
-									{
-									case "Cash" :
-										document.getElementById("status").options[0]=new Option("-","");
-										
-										break;
-									case "Credit Card" :
-										document.getElementById("status").options[0]=new Option("Select Credit Card","");
-										document.getElementById("status").options[1]=new Option("123","123");
-										document.getElementById("status").options[2]=new Option("456","456");										
-										break;
-									}
-									return true;
-								}
-								</script>
+								<br/>
+								Not listed here? Enter an address here: 
+								<textarea id="txtNewAddress" name="txtNewAddress" rows="3" cols="40" disabled></textarea>
 								
-								<div class="category_div" id="category_div">Choose your Payment type:
-									<select id="source" name="source" onchange="javascript: dynamicdropdown(this.options[this.selectedIndex].value);">
-									<option value="">Please select your payment type:</option>
+								
+								<br/><br/>
+								
+								<!-- PAYMENT -->
+								<label for='paymentType'>Please select your Payment Type: </label>  
+								<br/>
+								<select id='mySelectPaymentMethod' onchange='myFunctionPaymentMethod()'>
 									<option value="Cash">Cash</option>
 									<option value="Credit Card">Credit Card</option>
-									</select>
-								</div>
-								<div class="sub_category_div" id="sub_category_div">Choose your Credit Card:
-									<script type="text/javascript" language="JavaScript">
-									document.write('<select name="status" id="status"><option value="">Select status</option></select>')
-									</script>									
-								</div>
+								</select>
+								
+								<script>
+									function myFunctionPaymentMethod() {
+										var x = document.getElementById('mySelectPaymentMethod').value;
+										
+										if (x != 'Cash') 
+										{
+											document.getElementById("creditCardContainer").style.display = 'block';
+											document.getElementById("creditCardText").style.display = 'block';
+										}
+										else 
+										{
+											document.getElementById("creditCardContainer").style.display = 'none';
+											document.getElementById("creditCardText").style.display = 'none';
+										}
+									}
+								</script>
+								
+								<label for='creditCard' id="creditCardText" style="display: none;">Please select your Credit Card: </label>  
+                                <?php
+                                
+                                    $customerId = $_SESSION['loggedInCustomerId'];
+                                    $db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+                                    $result = pg_query($db,"SELECT * FROM CreditCardDetails ccd WHERE ccd.customerId = $customerId");
+                                    
+                                    echo "<table id='creditCardContainer' style='display: none;'>";
+                                    
+                                    echo" 
+                                    <tr>
+                                        <th>Card Number</th>
+                                        <th>Card Holder Name</th>
+                                        <th>CVV Number</th>
+                                        <th>Expiry Date (YYYY-MM)</th>
+                                    </tr>";
+                                    
+                                    while ($row = pg_fetch_row($result)) {
+                                    
+                                        $cardNumber = $row[0];
+                                        $cardHolderName = $row[1];
+                                        $cvvNumber = $row[2];
+                                        $expiryMonth = $row[3];
+                                        $expiryYear = $row[4];
+                                                
+                                        echo "<tr>";
+                                        echo "<td align='center' width='200'>" . $cardNumber . "</td>";
+                                        echo "<td align='center' width='200'>" . $cardHolderName . "</td>";
+                                        echo "<td align='center' width='200'>" . $cvvNumber . "</td>";
+                                        echo "<td align='center' width='200'>" . $expiryYear . "-" . $expiryMonth ."</td>";
+                                        
+                                        echo"<td><form method='post' name='myForm'>
+                                             <input type='hidden' id='customerId' name='customerId' value='$customerId'>
+                                             <input type='hidden' id='cardNumber' name='cardNumber' value='$cardNumber'>		
+                                             <input type='submit' id='btnSelectCreditCard' name='btnSelectCreditCard' value='Select' title='Click to select this credit card for payment'/>                                   
+                                             </form></td>";
+                                        
+                                        echo "</tr>";
+                                    }
+                                        echo "</table>";
+                                ?>
+								
+								<?php
+								if(isset($_POST['btnSelectCreditCard'])){
+									$_SESSION['selectedCreditCardNumber'] = $_POST['cardNumber'];
+								}								
+								?>
+								
+                                <br/><br/>
                             </div>																
                         </div>
 

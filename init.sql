@@ -208,7 +208,7 @@ CREATE TABLE stores (
 );
 
 CREATE TABLE creditCardDetails (
-	cardNumber bigint NOT NULL,
+	cardNumber bigint NOT NULL UNIQUE,
 	cardHolderName varchar (100),
 	cvvNumber integer NOT NULL,
 	expiryMonth integer NOT NULL,
