@@ -4,7 +4,7 @@
     $username = $_SESSION["username"];
 	$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-	$query = "SELECT u.username, c.accumulatedPoints, u.name, u.contactNo FROM customers c JOIN users u on c.customerid = u.userId WHERE u.username = '$username';";
+	$query = "SELECT u.username, c.accumulatedPoints, u.name, u.contactNo FROM customers c JOIN users u on c.userId = u.userId WHERE u.username = '$username';";
 
 	$res = pg_query($link, $query);
 

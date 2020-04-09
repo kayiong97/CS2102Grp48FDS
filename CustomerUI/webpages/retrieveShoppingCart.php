@@ -39,6 +39,18 @@
             .about-info {
                 min-height: 500px;
             }
+			
+			th, td {
+			  text-align: left;
+			  padding: 8px;
+			}
+
+			tr:nth-child(even){background-color: #f2f2f2}
+
+			th {
+			  background-color: Purple;
+			  color: white;
+			}
         </style>
 
     </head>
@@ -148,6 +160,15 @@
 .card button:hover {
   opacity: 0.7;
 }
+
+.cartTable{
+	width: 1000px;
+}
+
+td:nth-child(7), td:nth-child(5), td:nth-child(6) {
+    padding-right: 15px !important;
+    display: inline-block;
+}
 </style>
 
         <!-- Restaurants -->
@@ -161,19 +182,27 @@
                             <div class="about-info">
                                 
 								<?php
+								$checkoutStatusTrue = true;		
+																
+								$cartSubAmount = 0;								
+								$deliveryFee = 5;
 								
 								$username = $_SESSION["username"];
 								
 								$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-								$result = pg_query($db,"SELECT s.quantity, s.customerid, s.name, r.name FROM shoppingcart s, restaurant r  WHERE ischeckout = false AND s.restaurantid = r.restaurantid AND customerid IN (SELECT customerid from users u, customers c where u.username='leexl' and u.userid = c.userid);");
+								$result = pg_query($db,"SELECT s.quantity, s.customerid, s.name, r.name, s.restaurantid, rf.price, r.minmonetaryamount FROM shoppingcart s, restaurant r, restaurantfood rf  
+								WHERE ischeckout = false AND s.name = rf.name AND s.restaurantid = rf.restaurantid AND s.restaurantid = r.restaurantid AND 
+								customerid IN (SELECT customerid from users u, customers c where u.username='$username' and u.userid = c.userid);");
 								
-								echo "<table>";
+								echo "<table class='cartTable'>";
 								echo" 
 								<tr>
 									<th>Food Name</th>
 									<th>Quantity</th>
 									<th>Restaurant Name</th>
-									<th>Action</th>							
+									<th>Price</th>						
+									<th colspan='3'>Action</th>	
+									
 								</tr>";
 								
 								while($row = pg_fetch_row($result)){
@@ -182,20 +211,210 @@
 								$customerid = $row[1];
 								$name = $row[2];
 								$rname = $row[3];						
+								$restaurantid = $row[4];
+								$price = $row[5];
+								$minmonetaryamount = $row[6];
+								
+								$cartSubAmount += $quantity*$price;								
 								
 								echo "<tr>";
 								echo "<td align='center' width='200'>" . $name . "</td>";
 								echo "<td align='center' width='200'>" . $quantity . "</td>";
 								echo "<td align='center' width='200'>" . $rname  . "</td>";
+								echo "<td align='center' width='200'>" . $price  . "</td>";
 								
+								echo"<td>
+									 <form method='post' name='myForm'>
+									 <input type='hidden' id='retname' name='retname' value='$name'>
+									 <input type='hidden' id='retcustomerid' name='retcustomerid' value='$customerid'>
+									 <input type='hidden' id='retrestaurantid' name='retrestaurantid' value='$restaurantid'>
+									 <input type='hidden' id='retquantity' name='retquantity' value='$quantity'>								 
+									 <input type='submit' id='retrieveItemRow' name='btnSubtractQuantity' value='-' title='Click to Subtract Quantity'/>                                   
+									 </form>
+									 </td>";
+								
+								echo"<td>
+									 <form method='post' name='myForm'>
+									 <input type='hidden' id='retname' name='retname' value='$name'>
+									 <input type='hidden' id='retcustomerid' name='retcustomerid' value='$customerid'>
+									 <input type='hidden' id='retrestaurantid' name='retrestaurantid' value='$restaurantid'>
+									 <input type='hidden' id='retquantity' name='retquantity' value='$quantity'>
+									 <input type='submit' id='retrieveItemRow' name='btnAddQuantity' value='+' title='Click to Add Quantity'/>                                   
+									 </form>
+									 </td>";
+								
+								echo"<td>
+									 <form method='post' name='myForm'>
+									 <input type='hidden' id='retname' name='retname' value='$name'>
+									 <input type='hidden' id='retcustomerid' name='retcustomerid' value='$customerid'>
+									 <input type='hidden' id='retrestaurantid' name='retrestaurantid' value='$restaurantid'>
+									 <input type='hidden' id='retquantity' name='retquantity' value='$quantity'>
+									 <input type='submit' id='retrieveItemRow' name='btnRemoveRow' value='X' title='Click to Delete Item'/>                                   
+									 </form>
+									 </td>";
 								
 								echo "</tr>";}
 								echo "</table>";
 								
+								$cartTotalAmount = $cartSubAmount + $deliveryFee;
+								
+								echo"</br>";
+								echo "*************Minimum Order for Checkout: $" .$minmonetaryamount;
+								echo"</br>";
+								echo "*************Sub Total: $" .$cartSubAmount;
+								echo"</br>";
+								echo "*************Delivery Charges: $" .$deliveryFee;
+								echo"</br>";
+								echo "*************Total Payable Amount: $" .$cartTotalAmount;
+								
+								if($cartTotalAmount >= $minmonetaryamount){
+								echo"</br>";
+								
+								$_SESSION["checkoutStatus"] = 2;
+								echo "*************Can Check out: ". $_SESSION[ "checkoutStatus"];
+								}
+								else{
+								echo"</br>";
+								$_SESSION["checkoutStatus"] = 1;
+								echo "*************Cannot Check out: ". $_SESSION[ "checkoutStatus"];
+								}
 								?>
 								
+								<?php
+								if (isset($_POST['btnRemoveRow'])){
+								$customerid = $_POST["retcustomerid"];
+								$name = $_POST["retname"];
+								$restaurantid = $_POST["retrestaurantid"];
+								$quantity = $_POST["retquantity"];;
 								
-                            </div>
+								$result2 = pg_query($db, "DELETE FROM shoppingcart WHERE name = '$name' AND restaurantid = $restaurantid AND customerid = $customerid");
+								if (!$result2)
+								{
+								echo "Delete failed!!";
+								} else
+								{
+								echo "Delete successfull;";
+								echo "*******".$customerid.$name.$restaurantid;
+								echo "<script language='javascript'>";
+								echo 'window.location.replace("retrieveShoppingCart.php");';
+								echo "</script>";
+								}
+								}
+								?>	
+								
+								<?php
+								if(isset($_POST['btnSubtractQuantity'])){
+								
+								
+								$customerid = $_POST["retcustomerid"];
+								$name = $_POST["retname"];
+								$restaurantid = $_POST["retrestaurantid"];
+								$quantity = $_POST["retquantity"];
+								
+
+								if($quantity != 1){
+								$result1 = pg_query($db, "UPDATE shoppingcart SET quantity = '$quantity'-1 							
+								WHERE name = '$name' AND restaurantid = $restaurantid AND customerid = $customerid");
+								
+								if (!$result1)
+								{
+								echo "Update failed!!";
+								} 
+								else
+								{
+								echo "Update successfull;";
+								echo "*******".$customerid.$name.$restaurantid;
+								echo "<script language='javascript'>";
+								echo 'window.location.replace("retrieveShoppingCart.php");';
+								echo "</script>";
+								}	
+								}	
+								}								
+								?>
+								
+								<?php
+								if(isset($_POST['btnAddQuantity'])){
+								
+								
+								$customerid = $_POST["retcustomerid"];
+								$name = $_POST["retname"];
+								$restaurantid = $_POST["retrestaurantid"];
+								$quantity = $_POST["retquantity"];
+								
+
+								
+								$result1 = pg_query($db, "UPDATE shoppingcart SET quantity = '$quantity'+1 							
+								WHERE name = '$name' AND restaurantid = $restaurantid AND customerid = $customerid");
+								
+								if (!$result1)
+								{
+								echo "Update failed!!";
+								} 
+								else
+								{
+								echo "Update successfull;";
+								echo "*******".$customerid.$name.$restaurantid;
+								echo "<script language='javascript'>";
+								echo 'window.location.replace("retrieveShoppingCart.php");';
+								echo "</script>";
+								}	
+								}								
+								?>
+																
+								<?php 
+								if ($_SESSION['checkoutStatus'] == 2){
+								echo"<form method='post' name='myCheckoutForm' >
+								<label for='paymentType'>Please select your payment type: </label>
+								<select name='paymentType' onchange='CreditCardInformation(this.value);'>  
+									<option value='Cash'>Cash on Delivery</option>
+									<option value='Credit Card'>Credit Card</option>								
+								  </select>
+								
+								<label for='chooseCreditCard'>Please select your Credit Card: </label>
+								<select name='chooseCreditCard' id='chooseCreditCard'>  
+									<option value='123'>123</option>
+									<option value='456'>456</option>								
+								</select>
+														
+								</br>
+								<input type='submit' value='Submit'>
+								</form>";
+								}
+								
+								?>
+								
+								<script language="javascript" type="text/javascript">
+								function dynamicdropdown(listindex)
+								{
+									switch (listindex)
+									{
+									case "Cash" :
+										document.getElementById("status").options[0]=new Option("-","");
+										
+										break;
+									case "Credit Card" :
+										document.getElementById("status").options[0]=new Option("Select Credit Card","");
+										document.getElementById("status").options[1]=new Option("123","123");
+										document.getElementById("status").options[2]=new Option("456","456");										
+										break;
+									}
+									return true;
+								}
+								</script>
+								
+								<div class="category_div" id="category_div">Choose your Payment type:
+									<select id="source" name="source" onchange="javascript: dynamicdropdown(this.options[this.selectedIndex].value);">
+									<option value="">Please select your payment type:</option>
+									<option value="Cash">Cash</option>
+									<option value="Credit Card">Credit Card</option>
+									</select>
+								</div>
+								<div class="sub_category_div" id="sub_category_div">Choose your Credit Card:
+									<script type="text/javascript" language="JavaScript">
+									document.write('<select name="status" id="status"><option value="">Select status</option></select>')
+									</script>									
+								</div>
+                            </div>																
                         </div>
 
                     </div>
