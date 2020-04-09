@@ -225,6 +225,9 @@
 				} else
 				{
 				echo "Update successfull;";
+				echo "<script language='javascript'>";
+				echo 'window.location.replace("JretrieveFood.php");';
+				echo "</script>";
 				}
 			}
 

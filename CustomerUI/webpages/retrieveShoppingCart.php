@@ -1,10 +1,6 @@
-﻿<?php
+<?php
     session_start();
 
-    if ( !empty( $_SESSION["username"] ) )
-    {
-        
-    }
 ?>
 
     <!DOCTYPE html>
@@ -92,6 +88,9 @@
 
                         <a href="login.php" class="section-btn" id="navLogout" <?php if( isset( $_SESSION[ "username"] ) ){ echo 'style="display:inline-block;"'; }else{ echo 'style="display:none;"'; } ?>>
                     Logout</a>
+					
+					    <a href="retrieveShoppingCart.php" class="section-btn" id="navLogout" <?php if( isset( $_SESSION[ "username"] ) ){ echo 'style="display:inline-block;"'; }else{ echo 'style="display:none;"'; } ?>>
+                    My Cart</a>
                     </ul>
                 </div>
 
@@ -151,62 +150,51 @@
 }
 </style>
 
-        <<!-- Restaurants -->
+        <!-- Restaurants -->
             <section id="about" data-stellar-background-ratio="0.5">
 
                 <div class="container">
                     <div class="row">
-                        <h2><u>>> Restaurants <?php echo "(".$_SESSION[ "restaurantsBasedOnCategory"].")"; ?></u></h2> 
+                        <h2><u>>> My Shopping Cart <?php echo "(".$_SESSION[ "username"].")"; ?></u></h2> 
 
                         <div class="col-md-6 col-sm-12">
                             <div class="about-info">
-                                <?php
                                 
-                                                                if($_POST){
-    if(isset($_POST['btnViewFoodBasedOnRestaurant'])){
-        $restaurantName = $_POST["btnViewFoodBasedOnRestaurant"];
-        $_SESSION["viewFoodByRestaurantName"] = $restaurantName;
-        echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewFoodByRestaurant.php'</script>";
-    }
-}
-
-                                    if( isset( $_SESSION[ "restaurantsBasedOnCategory"] ))
-                                    {
-                                        $categories = $_SESSION["restaurantsBasedOnCategory"];
-            
-                                        $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-
-                                        $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount, r.restaurantId FROM restaurant r JOIN restaurantFood rf ON r.restaurantId = rf.restaurantId WHERE rf.category = '$categories' ORDER BY r.name ASC;";
-                                        $res = pg_query($link, $query);
-                                        
-                                                                                echo "<table>";
-                                        echo "<tr>";
-                                        while ($row = pg_fetch_row($res)) {
-                                            $restaurantName = $row[0];
-                                            $contactNo = $row[1];
-                                            $address = $row[2];
-                                            $area = $row[3];
-                                            $minMonetaryAmount = $row[4];
-											
-                                            $_SESSION["restaurantIdClickedByUser"] = $row[5];
-                                                                                  
-                                                echo 
-                                                "<form method='post' name='myForm'>
-                                                <td><div class='card'>
-                                                <img src='/cs2102grp48fds/CustomerUI/assets/images/restaurants/$restaurantName.jpg' alt='$restaurantName' style='width: 100%; height: 200px;'>
-                                                <p><input type='submit' id='viewFoodButton' name='btnViewFoodBasedOnRestaurant' value='$restaurantName' title='Click to view food sold'/></p>
-                                                
-                                                <h3>$contactNo</h3>
-                                                <h3>$address ($area)</h3>
-                                                <h3>Minimum amount: $$minMonetaryAmount</h3>
-                                                </div></td>
-                                                </form>"; 
-                                        }
-                                        echo "</tr>";
-                                        echo "</table>";
-                                    
-                                    }
-                                ?>
+								<?php
+								
+								$username = $_SESSION["username"];
+								
+								$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+								$result = pg_query($db,"SELECT s.quantity, s.customerid, s.name, r.name FROM shoppingcart s, restaurant r  WHERE ischeckout = false AND s.restaurantid = r.restaurantid AND customerid IN (SELECT customerid from users u, customers c where u.username='leexl' and u.userid = c.userid);");
+								
+								echo "<table>";
+								echo" 
+								<tr>
+									<th>Food Name</th>
+									<th>Quantity</th>
+									<th>Restaurant Name</th>
+									<th>Action</th>							
+								</tr>";
+								
+								while($row = pg_fetch_row($result)){
+								
+								$quantity = $row[0];
+								$customerid = $row[1];
+								$name = $row[2];
+								$rname = $row[3];						
+								
+								echo "<tr>";
+								echo "<td align='center' width='200'>" . $name . "</td>";
+								echo "<td align='center' width='200'>" . $quantity . "</td>";
+								echo "<td align='center' width='200'>" . $rname  . "</td>";
+								
+								
+								echo "</tr>";}
+								echo "</table>";
+								
+								?>
+								
+								
                             </div>
                         </div>
 

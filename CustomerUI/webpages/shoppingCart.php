@@ -7,6 +7,23 @@
     }
 ?>
 
+<?php
+
+switch($_POST["action"]) {
+	case "add":
+		
+	break;
+	case "remove":
+		
+	break;
+	case "empty":
+		unset($_SESSION["cart_item"]);
+	break;	
+}
+
+?>
+
+
     <!DOCTYPE html>
     <html lang="en">
 
@@ -116,7 +133,6 @@
             </div>
         </section>
 
-
 <style>
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -126,7 +142,8 @@
   // font-family: arial;
   padding: 5px;
   min-width: 300px;
-
+  min-height: 500px;
+  max-height: 500px;
 }
 
 .price {
@@ -151,64 +168,113 @@
 }
 </style>
 
-        <<!-- Restaurants -->
+        <<!-- Shopping Cart -->
             <section id="about" data-stellar-background-ratio="0.5">
 
                 <div class="container">
                     <div class="row">
-                        <h2><u>>> Restaurants <?php echo "(".$_SESSION[ "restaurantsBasedOnCategory"].")"; ?></u></h2> 
+                        <h2><u>>> Shopping Cart</u></h2>
 
                         <div class="col-md-6 col-sm-12">
                             <div class="about-info">
-                                <?php
-                                
-                                                                if($_POST){
-    if(isset($_POST['btnViewFoodBasedOnRestaurant'])){
-        $restaurantName = $_POST["btnViewFoodBasedOnRestaurant"];
-        $_SESSION["viewFoodByRestaurantName"] = $restaurantName;
-        echo "<script>location.href = '/cs2102grp48fds/CustomerUI/webpages/viewFoodByRestaurant.php'</script>";
-    }
-}
+							
+							<div id="shoppingCartContent">							
+								<a id="btnEmpty" href="shoppingCart.php?action=empty">Empty Cart</a>
+								<?php
+								if(isset($_SESSION["cart_item"])){
+									$total_quantity = 0;
+									$total_price = 0;
+								?>	
+								<table class="tbl-cart" cellpadding="10" cellspacing="1">
+								<tbody>
+								<tr>
+								<th style="text-align:left;">Food Name</th>				
+								<th style="text-align:right;" width="5%">Quantity</th>
+								<th style="text-align:right;" width="10%">Unit Price</th>
+								<th style="text-align:right;" width="10%">Price</th>
+								<th style="text-align:center;" width="5%">Remove</th>
+								</tr>	
+								<?php		
+									foreach ($_SESSION["cart_item"] as $item){
+										$item_price = $item["quantity"]*$item["price"];
+										?>
+												<tr>											
+												<td><?php echo $item["name"]; ?></td>
+												<td><?php echo $item["quantity"]; ?></td>
+												<td><?php echo "$ ".$item["price"]; ?></td>
+												<td><?php echo "$ ". number_format($item_price,2); ?></td>
+												<td><a href="shoppingCart.php?action=remove&code=<?php echo $item["code"]; ?>" class="btnRemoveAction"><img src="icon-delete.png" alt="Remove Item" /></a></td>
+												</tr>
+												<?php
+												$total_quantity += $item["quantity"];
+												$total_price += ($item["price"]*$item["quantity"]);
+										}
+										?>
 
-                                    if( isset( $_SESSION[ "restaurantsBasedOnCategory"] ))
-                                    {
-                                        $categories = $_SESSION["restaurantsBasedOnCategory"];
-            
-                                        $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+								<tr>
+								<td colspan="2" align="right">Total:</td>
+								<td align="right"><?php echo $total_quantity; ?></td>
+								<td align="right" colspan="2"><strong><?php echo "$ ".number_format($total_price, 2); ?></strong></td>
+								<td></td>
+								</tr>
+								</tbody>
+								</table>		
+								  <?php
+								} else {
+								?>
+								<div class="no-records">Your Cart is Empty</div>
+								<?php 
+								}
+								?>
+							</div>
+							
+							
+							
+							
+							
+							
+							<div id="product-grid">
+								<div class="txt-heading">Products</div>
+								<?php
+										$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-                                        $query = "SELECT distinct r.name, contactNo, address, area, minMonetaryAmount, r.restaurantId FROM restaurant r JOIN restaurantFood rf ON r.restaurantId = rf.restaurantId WHERE rf.category = '$categories' ORDER BY r.name ASC;";
+                                        $query = "SELECT distinct rf.price, rf.name, rf.information, rf.availabilitystatus, rf.dailylimit FROM restaurantfood rf INNER JOIN restaurant r ON rf.restaurantid = r.restaurantid";
                                         $res = pg_query($link, $query);
                                         
-                                                                                echo "<table>";
+                                        echo "<table>";
                                         echo "<tr>";
                                         while ($row = pg_fetch_row($res)) {
-                                            $restaurantName = $row[0];
-                                            $contactNo = $row[1];
-                                            $address = $row[2];
-                                            $area = $row[3];
-                                            $minMonetaryAmount = $row[4];
-											
-                                            $_SESSION["restaurantIdClickedByUser"] = $row[5];
-                                                                                  
-                                                echo 
+                                            $name = $row[1];
+                                            $information = $row[2];
+                                            $price = $row[0];
+                                            $availabilitystatus = $row[3];
+                                            $dailylimit = $row[4];                                        
+                                        										
+										echo 
                                                 "<form method='post' name='myForm'>
                                                 <td><div class='card'>
-                                                <img src='/cs2102grp48fds/CustomerUI/assets/images/restaurants/$restaurantName.jpg' alt='$restaurantName' style='width: 100%; height: 200px;'>
-                                                <p><input type='submit' id='viewFoodButton' name='btnViewFoodBasedOnRestaurant' value='$restaurantName' title='Click to view food sold'/></p>
                                                 
-                                                <h3>$contactNo</h3>
-                                                <h3>$address ($area)</h3>
-                                                <h3>Minimum amount: $$minMonetaryAmount</h3>
+												<h3>Name: $name</h3>
+                                                <h3>Details: $information</h3>
+                                                <h3>Price: $$price</h3>												
+												<h3>Quantity Available: $dailylimit</h3>
+                                                
+												<input type='text' class='product-quantity' name='quantity' value='1' size='2' />
+												<input type='submit' value='Add to Cart' class='btnAddAction' />
                                                 </div></td>
                                                 </form>"; 
-                                        }
+										}		
                                         echo "</tr>";
                                         echo "</table>";
-                                    
-                                    }
-                                ?>
+								?>
+							</div>
+							
+							
+							
+							
                             </div>
                         </div>
+
 
                     </div>
                 </div>

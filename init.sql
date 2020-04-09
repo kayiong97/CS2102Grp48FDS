@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS pointTransaction CASCADE;
 DROP TABLE IF EXISTS payment CASCADE;
 DROP TABLE IF EXISTS shift CASCADE;
 DROP TABLE IF EXISTS workingDays CASCADE;
+DROP TABLE IF EXISTS shoppingCart CASCADE;
 
 CREATE TABLE users (
 	userId integer GENERATED ALWAYS AS IDENTITY,
@@ -138,6 +139,17 @@ CREATE TABLE restaurantFood (
 	image OID,
 	PRIMARY KEY (name, restaurantId),
 	FOREIGN KEY (restaurantId) REFERENCES restaurant ON DELETE CASCADE
+);
+
+CREATE TABLE shoppingCart (
+	quantity integer,
+	customerId integer,
+	isCheckout boolean DEFAULT FALSE,
+	name varchar(100),
+	restaurantId integer,
+	PRIMARY KEY (name, restaurantId, customerId), 
+	FOREIGN KEY (customerId) REFERENCES customers,
+	FOREIGN KEY (name, restaurantId) REFERENCES restaurantFood
 );
 
 CREATE TABLE orders (
@@ -271,6 +283,10 @@ INSERT INTO fullTimeRider(riderId, monthlyBaseSalary) VALUES (8, 4800);
 INSERT INTO customers(accumulatedPoints, userId) values(100, 9);
 INSERT INTO customers(accumulatedPoints, userId) values(200, 10);
 INSERT INTO customers(accumulatedPoints, userId) values(300, 11);
+
+INSERT INTO shoppingCart(quantity, customerId, name, restaurantId) values(1, 1, '2 Pcs Chicken Set', 2);
+INSERT INTO shoppingCart(quantity, customerId, name, restaurantId) values(1, 2, '2 Pcs Chicken Set', 2);
+INSERT INTO shoppingCart(quantity, customerId, name, restaurantId) values(1, 3, '2 Pcs Chicken Set', 2);
 
 INSERT INTO orders(totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) 
 values(70, '2019-6-20 14:23:54', '234 Seng Keng Avenue 3 #21-14 S201010', 10);

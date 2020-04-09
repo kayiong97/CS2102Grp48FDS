@@ -1,10 +1,6 @@
 ﻿<?php
     session_start();
 
-    if ( !empty( $_SESSION["username"] ) )
-    {
-        
-    }
 ?>
 
     <!DOCTYPE html>
@@ -151,7 +147,7 @@
 }
 </style>
 
-        <<!-- Restaurants -->
+        <!-- Restaurants -->
             <section id="about" data-stellar-background-ratio="0.5">
 
                 <div class="container">
@@ -187,12 +183,19 @@
                                                 <p><input type='submit' id='viewFoodButton' name='btnViewFoodBasedOnRestaurant' value='$name'/></p>
                                                 
                                                 <h3>Details: $information</h3>
-                                                <h3>Price: $$price</h3>
-												//<h3>Status: $availabilitystatus</h3>
-												<h3>Limit: $dailylimit</h3>
+                                                <h3>Price: $$price</h3>												
+												<h3>Quantity Available: $dailylimit</h3>
+												";
                                                 
-                                                <input type='submit' id='btnAddToCart' name='btnAddToCart' value='Add to Cart' style='background-color:orange'/>
-                                                <input type='hidden' id='foodToAddToCart' name='foodToAddToCart' value='$name'/>
+                                                if ($row[4] == 0) { 
+                                                    echo "<input type='submit' id='btnAddToCart' name='btnAddToCart' value='Add to Cart' style='background-color:lightgrey' disabled />";
+                                                } else { 
+                                                    echo "<input type='submit' id='btnAddToCart' name='btnAddToCart' value='Add to Cart' style='background-color:orange' />";
+                                                } 
+												
+												
+												
+												echo "<input type='hidden' id='foodToAddToCart' name='foodToAddToCart' value='$name'/>
                                                 </div></td>
                                                 </form>"; 
 										}		
@@ -203,13 +206,53 @@
                                 ?>
                                 
                                 <?php
+                                                               
+								echo "restaurantIdClickedByUser: ".$_SESSION["restaurantIdClickedByUser"];
+								echo "<br/>";
+                                echo "loggedInCustomerId: ".$_SESSION["loggedInCustomerId"];
                                 
                                     if(isset($_POST['btnAddToCart'])){
                                         
-                                        if (isset($_POST[''])){
-                                            $foodToAddToCart = $_POST['foodToAddToCart'];
-                                            echo 'foodToAddToCart: '.$foodToAddToCart;
-                                        }
+                                            $restaurantIdClickedByUser = $_SESSION["restaurantIdClickedByUser"];
+                                            $foodNameToAddToCart = $_POST['foodToAddToCart'];
+                                            $loggedInCustomerId = $_SESSION["loggedInCustomerId"];
+                                           
+                                            //Check if this food item is in database. If it is, just update quantity
+                                            $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+                                            $query = "SELECT sc.name, sc.quantity FROM ShoppingCart sc 
+											WHERE sc.customerId = $loggedInCustomerId AND sc.name = '$foodNameToAddToCart' ;";
+                                            $res = pg_query($link, $query);
+                                            
+                                            $quantityToBeAdded = 0;
+                                            
+                                            while ($row = pg_fetch_row($res)) {
+                                                $quantityToBeAdded = $row[1] + 1;
+                                                
+                                                echo "This food already added to cart, so jst need udpate quantity.";
+                                                 
+                                                 if ( $quantityToBeAdded != 0 ) {
+                                                    $res2 = pg_query($link, "UPDATE shoppingCart SET quantity = $quantityToBeAdded 
+                                                    WHERE customerId = $loggedInCustomerId AND name = '$foodNameToAddToCart' ;");
+                                                    
+                                                    if (!$res2) {
+                                                        echo "Update shopping cart for quantity for an item failed!!";
+                                                    } else {
+                                                        echo "Update shopping cart for quantity for an item successfull;";
+                                                    }
+                                                }
+                                                break;
+                                            }   
+											
+
+												//Insert into shopping cart if THIS FOOD ITEM IS NOT EXIST IN DATABASE
+												
+												$query3 = "INSERT INTO SHOPPINGCART(quantity, customerId, name, restaurantId) 
+												VALUES(1, $loggedInCustomerId, '$foodNameToAddToCart', $restaurantIdClickedByUser) ;";
+												$res3 = pg_query($link, $query3);
+													
+												if ($res3) {
+													echo "Insertion into shopping cart is successful.";
+												}
                                     }
                                 
                                 ?>

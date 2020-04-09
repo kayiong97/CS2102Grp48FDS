@@ -219,6 +219,10 @@
 				} else
 				{
 				echo "Update successfull;";
+				
+				echo "<script language='javascript'>";
+				echo 'window.location.replace("JretrieveRestaurant.php");';
+				echo "</script>";
 				}
 			}
 

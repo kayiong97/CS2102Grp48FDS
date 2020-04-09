@@ -210,6 +210,9 @@
 				} else
 				{
 				echo "Update successfull;";
+				echo "<script language='javascript'>";
+				echo 'window.location.replace("JretrievePromotion.php");';
+				echo "</script>";
 				}
 			}
 
