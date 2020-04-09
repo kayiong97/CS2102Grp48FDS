@@ -4,7 +4,7 @@
     $username = $_SESSION["username"];
 	$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-	$query = "SELECT u.username, c.accumulatedPoints, u.name, u.contactNo FROM customers c JOIN users u on c.customerid = u.userId WHERE u.username = '$username';";
+	$query = "SELECT u.username, c.accumulatedPoints, u.name, u.contactNo FROM customers c JOIN users u on c.userId = u.userId WHERE u.username = '$username';";
 
 	$res = pg_query($link, $query);
 
@@ -18,7 +18,6 @@
 
             $contactNo = $row[3];
 			$_SESSION["contactNo"] = $contactNo;
-
 		} else {
 			// echo "Sorry, no result found.";
         }
@@ -161,30 +160,147 @@
                             <h4>Contact No: <u style="margin-left:10%;"> <?php echo($_SESSION["contactNo"] );?> </u></h4>
 
                             <h4>Membership Points: <u style="margin-left:0%;"> <?php echo($_SESSION["accumulatedPoints"]);?> </u></h4>
-
+                          
+<!--
                             <h4>Delivery Locations: <u style="margin-left:20%;">
                                 <?php
 
-	$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+                                $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-    $query2 = "select deliverylocation from delivery d
-    JOIN stores s on s.deliveryId = d.deliveryId
-    JOIN customers c on s.customerId = c.customerId
-    JOIN users u on u.userId = c.userId
-    WHERE u.username = '$username'
-    ORDER BY d.orderedTimestamp DESC LIMIT 5;";
-    $res2 = pg_query($link, $query2);
+                                $query2 = "select deliverylocation from delivery d
+                                JOIN stores s on s.deliveryId = d.deliveryId
+                                JOIN customers c on s.customerId = c.customerId
+                                JOIN users u on u.userId = c.userId
+                                WHERE u.username = '$username'
+                                ORDER BY d.orderedTimestamp DESC LIMIT 5;";
+                                $res2 = pg_query($link, $query2);
 
-	while ($row = pg_fetch_row($res2)) {
+                                while ($row = pg_fetch_row($res2)) {
 
-            $deliveryLocation = $row[0];
-			$_SESSION["deliveryLocation"] = $deliveryLocation;
+                                        $deliveryLocation = $row[0];
+                                        $_SESSION["deliveryLocation"] = $deliveryLocation;
 
-            echo "<br/> $deliveryLocation <br/>";
+                                        echo "<br/> $deliveryLocation <br/>";
 
-		}
+                                    }
 
-    ?></u></h4>
+                                ?></u>
+                            </h4>
+ -->                           
+ 
+                            <div>
+                            <div class="col-50">
+                                <h3>Credit Card Details</h3>
+                                
+                                <h4 style="border: 1px solid;">Your Credit Cards Registered</h4>
+                                <br/>
+                                <?php
+                                
+                                    $customerId = $_SESSION['loggedInCustomerId'];
+                                    $db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+                                    $result = pg_query($db,"SELECT * FROM CreditCardDetails ccd WHERE ccd.customerId = $customerId");
+                                    
+                                    echo "<table>";
+                                    
+                                    echo" 
+                                    <tr>
+                                        <th>Card Number</th>
+                                        <th>Card Holder Name</th>
+                                        <th>CVV Number</th>
+                                        <th>Expiry Date (YYYY-MM)</th>
+                                    </tr>";
+                                    
+                                    while ($row = pg_fetch_row($result)) {
+                                    
+                                        $cardNumber = $row[0];
+                                        $cardHolderName = $row[1];
+                                        $cvvNumber = $row[2];
+                                        $expiryMonth = $row[3];
+                                        $expiryYear = $row[4];
+                                                
+                                        echo "<tr>";
+                                        echo "<td align='center' width='200'>" . $cardNumber . "</td>";
+                                        echo "<td align='center' width='200'>" . $cardHolderName . "</td>";
+                                        echo "<td align='center' width='200'>" . $cvvNumber . "</td>";
+                                        echo "<td align='center' width='200'>" . $expiryYear . "-" . $expiryMonth ."</td>";
+                                        
+                                        echo"<td><form method='post' name='myForm'>
+                                             <input type='hidden' id='customerId' name='customerId' value='$customerId'>
+                                             <input type='hidden' id='cardNumber' name='cardNumber' value='$cardNumber'>		
+                                             <input type='submit' id='btnRemoveCreditCard' name='btnRemoveCreditCard' value='Remove' title='Click to remove this credit card'/>                                   
+                                             </form></td>";
+                                        
+                                        echo "</tr>";
+                                    }
+                                        echo "</table>";
+                                ?>
+        
+                                <?php
+                                if(isset($_POST['btnRemoveCreditCard'])){
+                                    $customerId = $_POST["customerId"];
+                                    $cardNumber = $_POST["cardNumber"];
+                                    
+                                    $result2 = pg_query($db, "DELETE FROM creditCardDetails WHERE customerId = $customerId AND cardNumber = $cardNumber");
+                                    if (!$result2)
+                                    {
+                                        echo "Delete failed!!";
+                                    } else
+                                    {
+                                        //echo "Delete successfull;";
+                                        echo "<script>alert('This credit card has been removed.'); window.location.href = 'viewAccountProfile.php'; </script>";
+                                    }
+                                }
+                                ?>
+                                
+                                <hr/>
+                                
+                                <h4 style="border: 1px solid;">Register New Credit Card</h4>
+                                <br/>
+                                <label for="fname">Accepted Cards</label>
+                                <div class="icon-container">
+                                  <i class="fa fa-cc-visa" style="color:navy;"></i>
+                                  <i class="fa fa-cc-amex" style="color:blue;"></i>
+                                  <i class="fa fa-cc-mastercard" style="color:red;"></i>
+                                  <i class="fa fa-cc-discover" style="color:orange;"></i>
+                                </div>
+                                <label for="cname">Name on Card</label>
+                                <input type="text" id="cname" name="cardname" placeholder="John More Doe">
+                                <br/>
+                                <label for="ccnum">Credit card number</label>
+                                <input type="text" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444">
+                                <br/>
+                                <label for="expyear">Expiry Year</label>
+                                <input type="text" id="expyear" name="expyear" placeholder="2018">
+                                <br/>
+                                <label for="expmonth">Expiry Month</label>
+                                <input type="text" id="expmonth" name="expmonth" placeholder="12">
+                                <br/>
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" name="cvv" placeholder="352">
+                                <br/>
+                                
+                                <input type="submit" value="Register Credit Card Details" name="btnRegisterCreditCardDetails"/>
+                                
+                                <?php
+                                if(isset($_POST['btnRegisterCreditCardDetails'])){
+                       
+                                    $db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+
+                                    $query = "INSERT INTO creditCardDetails(cardNumber, cardHolderName, cvvNumber, expiryMonth, expiryYear, customerId)
+                                    VALUES ('$_POST[cardnumber]', '$_POST[cardname]','$_POST[cvv]','$_POST[expmonth]', '$_POST[expyear]')";
+                                    $result = pg_query($query); 
+                                    
+                                    if ($result)
+                                    {
+                                        echo "<script>alert('This credit card has been registered.')</script>";
+                                    }
+                                }
+                                ?>
+                                
+                              </div>
+                            </div>
+                            
+                            
                         </div>
                     </div>
 
