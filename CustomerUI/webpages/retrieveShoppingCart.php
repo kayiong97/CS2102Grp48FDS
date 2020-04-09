@@ -266,18 +266,40 @@ td:nth-child(7), td:nth-child(5), td:nth-child(6) {
 								echo "*************Delivery Charges: $" .$deliveryFee;
 								echo"</br>";
 								echo "*************Total Payable Amount: $" .$cartTotalAmount;
+								//$_SESSION["payableAmountBeforeDiscount"] = $cartTotalAmount;
+								
+								echo"<form method='post' name='myForm'>
+								<input type='text' id='information' name='information'/>
+								<input type='submit' id='retrievePromotionCode' name='btnRetrievePromotionCode' value='Use Promotion Code' title='User Promotion Code'/>
+								</form>";
+								
+								if (isset($_POST['btnRetrievePromotionCode'])){
+								$result2 = pg_query($db, "SELECT discountamount FROM promotion WHERE information = '$_POST[information]';");
+								while($row = pg_fetch_row($result2)){
+								$discountamount = $row[0];
+								
+								echo "*************discountamount: $" .$discountamount;
+								echo"</br>";
+								echo "*************Total Payable Amount (After Discount): $" . ($cartTotalAmount - $discountamount);
+								}
+
+								}
 								
 								if($cartTotalAmount >= $minmonetaryamount){
 								echo"</br>";
 								
 								$_SESSION["checkoutStatus"] = 2;
-								echo "*************Can Check out: ". $_SESSION[ "checkoutStatus"];
+								echo "*************Can Checkout: ". $_SESSION[ "checkoutStatus"];
 								}
 								else{
 								echo"</br>";
 								$_SESSION["checkoutStatus"] = 1;
 								echo "*************Cannot Check out: ". $_SESSION[ "checkoutStatus"];
 								}
+								?>
+								
+								<?php
+								
 								?>
 								
 								<?php
