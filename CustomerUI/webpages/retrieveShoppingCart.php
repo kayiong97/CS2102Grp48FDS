@@ -127,49 +127,48 @@
             </div>
         </section>
 
+		<style>
+		.card {
+		  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+		  max-width: 300px;
+		  margin: auto;
+		  text-align: center;
+		  // font-family: arial;
+		  padding: 5px;
+		  min-width: 300px;
 
-<style>
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 300px;
-  margin: auto;
-  text-align: center;
-  // font-family: arial;
-  padding: 5px;
-  min-width: 300px;
+		}
 
-}
+		.price {
+		  color: grey;
+		  font-size: 22px;
+		}
 
-.price {
-  color: grey;
-  font-size: 22px;
-}
+		.card input[type=submit] {
+		  border: none;
+		  outline: 0;
+		  padding: 12px;
+		  color: white;
+		  background-color: #000;
+		  text-align: center;
+		  cursor: pointer;
+		  width: 100%;
+		  font-size: 18px;
+		}
 
-.card input[type=submit] {
-  border: none;
-  outline: 0;
-  padding: 12px;
-  color: white;
-  background-color: #000;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  font-size: 18px;
-}
+		.card button:hover {
+		  opacity: 0.7;
+		}
 
-.card button:hover {
-  opacity: 0.7;
-}
+		.cartTable{
+			width: 1000px;
+		}
 
-.cartTable{
-	width: 1000px;
-}
-
-td:nth-child(7), td:nth-child(5), td:nth-child(6) {
-    padding-right: 15px !important;
-    display: inline-block;
-}
-</style>
+		td:nth-child(7), td:nth-child(5), td:nth-child(6) {
+			padding-right: 15px !important;
+			display: inline-block;
+		}
+		</style>
 
         <!-- Restaurants -->
             <section id="about" data-stellar-background-ratio="0.5">
@@ -180,10 +179,22 @@ td:nth-child(7), td:nth-child(5), td:nth-child(6) {
 
                         <div class="col-md-6 col-sm-12">
                             <div class="about-info">
-                                
+                               <script language="javascript">
+									function validate()
+									{									
+										alert('Your order does not meet the minimum amount for delivery!');											
+										return true;
+									}
+									
+									function validate2()
+									{									
+										alert('Your order has been confirmed!');											
+										return true;
+									}
+									</script>					   
 								<?php
 								$checkoutStatusTrue = true;		
-																
+								$minmonetaryamount = 0;								
 								$cartSubAmount = 0;								
 								$deliveryFee = 5;
 								
@@ -274,34 +285,29 @@ td:nth-child(7), td:nth-child(5), td:nth-child(6) {
 								</form>";
 								
 								if (isset($_POST['btnRetrievePromotionCode'])){
-								$result2 = pg_query($db, "SELECT discountamount FROM promotion WHERE information = '$_POST[information]';");
+								$result2 = pg_query($db, "SELECT p.discountamount FROM promotion p WHERE information = '$_POST[information]' AND p.restaurantid = $restaurantid;");
 								while($row = pg_fetch_row($result2)){
 								$discountamount = $row[0];
 								
-								echo "*************discountamount: $" .$discountamount;
+								echo "*************Discount Amount: $" .$discountamount;
 								echo"</br>";
+								
+								if(($cartTotalAmount - $discountamount) > 0){
 								echo "*************Total Payable Amount (After Discount): $" . ($cartTotalAmount - $discountamount);
+								}
+								else{
+								echo "*************Total Payable Amount (After Discount): $0";	
+								}
 								}
 
 								}
 								
-								if($cartTotalAmount >= $minmonetaryamount){
-								echo"</br>";
-								
-								$_SESSION["checkoutStatus"] = 2;
-								echo "*************Can Checkout: ". $_SESSION[ "checkoutStatus"];
-								}
-								else{
-								echo"</br>";
-								$_SESSION["checkoutStatus"] = 1;
-								echo "*************Cannot Check out: ". $_SESSION[ "checkoutStatus"];
-								}
+								$_SESSION["getCartTotalAmount"] = $cartTotalAmount;
+								$_SESSION["getminmonetaryamount"] = $minmonetaryamount;
+																
 								?>
 								
-								<?php
-								
-								?>
-								
+																
 								<?php
 								if (isset($_POST['btnRemoveRow'])){
 								$customerid = $_POST["retcustomerid"];
@@ -432,7 +438,7 @@ td:nth-child(7), td:nth-child(5), td:nth-child(6) {
 											}
 											</script>";
 								?>
-								
+																							
 								<br/>
 								Not listed here? Enter an address here: 
 								<textarea id="txtNewAddress" name="txtNewAddress" rows="3" cols="40" disabled></textarea>
@@ -510,6 +516,43 @@ td:nth-child(7), td:nth-child(5), td:nth-child(6) {
 								<?php
 								if(isset($_POST['btnSelectCreditCard'])){
 									$_SESSION['selectedCreditCardNumber'] = $_POST['cardNumber'];
+								}								
+								?>
+								
+								</br>
+								</br>
+								
+								<?php 
+								
+								$sessGetCartTotalAmount = $_SESSION["getCartTotalAmount"];
+								$sessGetminmonetaryamount = $_SESSION["getminmonetaryamount"];
+								
+								if($sessGetCartTotalAmount >= $minmonetaryamount){
+								echo"</br>";																																								
+								$_SESSION["checkoutStatus"] = 2;
+								echo "*************Can Checkout: ". $_SESSION[ "checkoutStatus"];
+								echo "
+								<form id='checkoutTrigger' name='checkoutTrigger' method=POST onsubmit='return validate2()'>
+								<input type='submit' value='Checkout'/>
+								</form>";
+								}
+								
+								else{
+								echo"</br>";
+								$_SESSION["checkoutStatus"] = 1;
+								echo "*************Cannot Check out: ". $_SESSION[ "checkoutStatus"];
+								echo "
+								<form id='finfo' name='finfo' method=POST onsubmit='return validate()'>
+								<input type='submit' value='Checkout'/>
+								</form>";
+								}
+								
+								?>
+								
+								<?php
+								if(isset($_POST['checkoutTrigger'])){
+										
+								
 								}								
 								?>
 								
