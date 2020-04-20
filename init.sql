@@ -158,7 +158,7 @@ CREATE TABLE orders (
 	orderDateTime timestamp NOT NULL,
 	deliveryLocation varchar(100) NOT NULL,
 	deliveryFee float NOT NULL,
-	promotionId integer,
+	promotionId integer NULL,
 	PRIMARY KEY (orderId),
 	FOREIGN KEY (promotionId) REFERENCES promotion
 );
@@ -184,16 +184,17 @@ CREATE TABLE payment (
 
 CREATE TABLE completes (
 	completeId integer GENERATED ALWAYS AS IDENTITY,
-    completedDateTime TimeStamp,
+    completedDateTime TimeStamp NULL,
 	restaurantId integer,
-	riderId integer,
+	riderId integer NULL,
 	customerId integer,
 	ratingsForDelivery integer default 0,
 	reviewDescriptionForOrder varchar(500) default null,
 	paymentId integer,
 	orderId integer,
 	hasAskedForReviewRating boolean default false,
-	PRIMARY KEY (completeId, restaurantId, riderId),
+	--PRIMARY KEY (completeId, restaurantId, riderId),
+	PRIMARY KEY (completeId),
 	FOREIGN KEY (customerId) REFERENCES customers,
 	FOREIGN KEY (paymentId) REFERENCES payment,
 	FOREIGN KEY (riderId) REFERENCES rider,
@@ -224,8 +225,8 @@ CREATE TABLE delivery (
 	customerId integer,
 	orderedTimestamp timestamp,
     riderId integer,
-    ordersId integer,
-    FOREIGN KEY (ordersId) REFERENCES orders,
+    orderId integer,
+    FOREIGN KEY (orderId) REFERENCES orders,
     FOREIGN KEY (riderId) REFERENCES rider,
 	FOREIGN KEY (customerId) REFERENCES customers
 );
@@ -349,6 +350,9 @@ values ('5264710324443333', 'Lee Xiao Hui', 123, 11, 2020, 3);
 
 INSERT INTO creditCardDetails(cardNumber, cardHolderName, cvvNumber, expiryMonth, expiryYear, customerId) 
 values ('5264710324444444', 'Lee Xiao Bin', 123, 12, 2020, 2);
+
+INSERT INTO promotion(information, promoStartDate, promoEndDate, discountAmount, restaurantId) VALUES ('10off', '2019-11-10 15:23:54', '2019-12-15 20:23:54', 10, 1);
+INSERT INTO promotion(information, promoStartDate, promoEndDate, discountAmount, restaurantId) VALUES ('10off', '2019-12-10 15:23:54', '2019-12-30 20:23:54', 10, 2);
 
 INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
 values('2019-10-21 15:23:54', 1, 5, 1, 0, null, 1, 1, true);

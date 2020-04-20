@@ -1,5 +1,9 @@
 <?php
     session_start();
+	
+	
+//Hiding Errors 
+error_reporting(E_ERROR | E_PARSE);
 
 ?>
 
@@ -185,13 +189,8 @@
 										alert('Your order does not meet the minimum amount for delivery!');											
 										return true;
 									}
-									
-									function validate2()
-									{									
-										alert('Your order has been confirmed!');											
-										return true;
-									}
-									</script>					   
+								</script>	
+								
 								<?php
 								$checkoutStatusTrue = true;		
 								$minmonetaryamount = 0;								
@@ -236,7 +235,7 @@
 								
 								echo"<td>
 									 <form method='post' name='myForm'>
-									 <input type='hidden' id='retname' name='retname' value='$name'>
+									 <input type='hidden' id='foodname' name='foodname' value='$name'>
 									 <input type='hidden' id='retcustomerid' name='retcustomerid' value='$customerid'>
 									 <input type='hidden' id='retrestaurantid' name='retrestaurantid' value='$restaurantid'>
 									 <input type='hidden' id='retquantity' name='retquantity' value='$quantity'>								 
@@ -246,7 +245,7 @@
 								
 								echo"<td>
 									 <form method='post' name='myForm'>
-									 <input type='hidden' id='retname' name='retname' value='$name'>
+									 <input type='hidden' id='foodname' name='foodname' value='$name'>
 									 <input type='hidden' id='retcustomerid' name='retcustomerid' value='$customerid'>
 									 <input type='hidden' id='retrestaurantid' name='retrestaurantid' value='$restaurantid'>
 									 <input type='hidden' id='retquantity' name='retquantity' value='$quantity'>
@@ -256,7 +255,7 @@
 								
 								echo"<td>
 									 <form method='post' name='myForm'>
-									 <input type='hidden' id='retname' name='retname' value='$name'>
+									 <input type='hidden' id='foodname' name='foodname' value='$name'>
 									 <input type='hidden' id='retcustomerid' name='retcustomerid' value='$customerid'>
 									 <input type='hidden' id='retrestaurantid' name='retrestaurantid' value='$restaurantid'>
 									 <input type='hidden' id='retquantity' name='retquantity' value='$quantity'>
@@ -270,13 +269,13 @@
 								$cartTotalAmount = $cartSubAmount + $deliveryFee;
 								
 								echo"</br>";
-								echo "*************Minimum Order for Checkout: $" .$minmonetaryamount;
+								echo "*************<b>Minimum Order for Checkout</b>: $" .$minmonetaryamount;
 								echo"</br>";
 								echo "*************Sub Total: $" .$cartSubAmount;
 								echo"</br>";
 								echo "*************Delivery Charges: $" .$deliveryFee;
 								echo"</br>";
-								echo "*************Total Payable Amount: $" .$cartTotalAmount;
+								echo "*************<b>Total Payable Amount</b>: $" .$cartTotalAmount;
 								//$_SESSION["payableAmountBeforeDiscount"] = $cartTotalAmount;
 								
 								echo"<form method='post' name='myForm'>
@@ -285,9 +284,12 @@
 								</form>";
 								
 								if (isset($_POST['btnRetrievePromotionCode'])){
-								$result2 = pg_query($db, "SELECT p.discountamount FROM promotion p WHERE information = '$_POST[information]' AND p.restaurantid = $restaurantid;");
+								$result2 = pg_query($db, "SELECT p.discountamount, p.promotionId FROM promotion p WHERE information = '$_POST[information]' AND p.restaurantid = $restaurantid;");
 								while($row = pg_fetch_row($result2)){
 								$discountamount = $row[0];
+								$promotionId = $row[1];
+								
+								$_SESSION["storePromotionId"] = $promotionId;
 								
 								echo "*************Discount Amount: $" .$discountamount;
 								echo"</br>";
@@ -304,14 +306,14 @@
 								
 								$_SESSION["getCartTotalAmount"] = $cartTotalAmount;
 								$_SESSION["getminmonetaryamount"] = $minmonetaryamount;
-																
+								$_SESSION["getFinalTotalAmount"] = $cartTotalAmount - $discountamount;								
 								?>
 								
 																
 								<?php
 								if (isset($_POST['btnRemoveRow'])){
 								$customerid = $_POST["retcustomerid"];
-								$name = $_POST["retname"];
+								$name = $_POST["foodname"];
 								$restaurantid = $_POST["retrestaurantid"];
 								$quantity = $_POST["retquantity"];;
 								
@@ -335,7 +337,7 @@
 								
 								
 								$customerid = $_POST["retcustomerid"];
-								$name = $_POST["retname"];
+								$name = $_POST["foodname"];
 								$restaurantid = $_POST["retrestaurantid"];
 								$quantity = $_POST["retquantity"];
 								
@@ -362,42 +364,43 @@
 								
 								<?php
 								if(isset($_POST['btnAddQuantity'])){
-								
-								
-								$customerid = $_POST["retcustomerid"];
-								$name = $_POST["retname"];
-								$restaurantid = $_POST["retrestaurantid"];
-								$quantity = $_POST["retquantity"];
-								
-
-								
-								$result1 = pg_query($db, "UPDATE shoppingcart SET quantity = '$quantity'+1 							
-								WHERE name = '$name' AND restaurantid = $restaurantid AND customerid = $customerid");
-								
-								if (!$result1)
-								{
-								echo "Update failed!!";
-								} 
-								else
-								{
-								echo "Update successfull;";
-								echo "*******".$customerid.$name.$restaurantid;
-								echo "<script language='javascript'>";
-								echo 'window.location.replace("retrieveShoppingCart.php");';
-								echo "</script>";
-								}	
-								}								
-								?>
-								
-							<!-- 
-								<?php 
-
-								if ($_SESSION['checkoutStatus'] == 2){
+																
+									$customerid = $_POST["retcustomerid"];
+									$name = $_POST["foodname"];
+									$restaurantid = $_POST["retrestaurantid"];
+									$quantity = $_POST["retquantity"];
+									
+									//Check if this food item to be added to shoppingcart line is even possible. If it is then can continue adding.
+									$query1 = "SELECT rf.dailylimit FROM restaurantfood rf WHERE rf.restaurantid = $restaurantid AND rf.name = '$name'";								
+									$res1 = pg_query($db, $query1);
+									
+									$dailyLimitForThisFood = 0;
+									
+									while ($row = pg_fetch_row($res1)) {
+										$dailyLimitForThisFood = $row[0];
+										if ($quantity > $dailyLimitForThisFood)
+										{
+											echo "<script> alert('Quantity > Daily Limit! Cannot add anymore quantity. Reach max already.'); </script>";
+										}
+										else
+										{
+											//echo "<script> alert('Quantity < Daily Limit! Can still add more quantity. '); </script>";
+											$result1 = pg_query($db, "UPDATE shoppingcart SET quantity = '$quantity'+1 							
+											WHERE name = '$name' AND restaurantid = $restaurantid AND customerid = $customerid");
+										
+											if ($result1)
+											{
+												echo "Update successfull;";
+												echo "*******".$customerid.$name.$restaurantid;
+												echo "<script language='javascript'>";
+												echo 'window.location.replace("retrieveShoppingCart.php");';
+												echo "</script>";
+											}	
+										}
+									}
 								}
 								?>
-							-->
-							
-							
+								
 								<br/><br/>    
 								<!-- DELIVEYR LOCATIONS -->
 								
@@ -413,19 +416,24 @@
 										ORDER BY d.orderedTimestamp DESC LIMIT 5;";
 										$res2 = pg_query($link, $query2);
 
-										echo "<select id='mySelectDeliveryLocations' onchange='myFunctionDeliveryLocation()'>";
+										echo "<form method='post'>";
 										
-										echo "<option value='0'>Select Delivery Location</option>";
+										echo "<select id='mySelectDeliveryLocations' onchange='myFunctionDeliveryLocation()' name='deliveryLocation'>";
+										
+										//echo "<option value='0'>Select Delivery Location</option>";
 												
 										while ($row = pg_fetch_row($res2)) {
 												$deliveryLocation = $row[0];
-												$_SESSION["deliveryLocation"] = $deliveryLocation;
+												//$_SESSION["deliveryLocation"] = $deliveryLocation;
 
-												echo "<br/> $deliveryLocation <br/>";
-												
+												echo "<br/> $deliveryLocation <br/>";												
 												echo "<option value='$deliveryLocation'>$deliveryLocation</option>";
 										}
 										echo "</select>";
+										
+										echo "<input type='submit' name='btnSubmitDeliveryLocation' value='Select Delivery Location'/>
+										</form>";
+								
 										
 										echo "<script>
 											function myFunctionDeliveryLocation() {
@@ -438,21 +446,39 @@
 											}
 											</script>";
 								?>
-																							
+											
+								<?php
+										//deliveryLocation dropdownlist
+										if (isset($_POST['btnSubmitDeliveryLocation'])){
+											$_SESSION['deliveryLocation'] = $_POST['deliveryLocation'];
+										}
+								?>
+								
 								<br/>
 								Not listed here? Enter an address here: 
 								<textarea id="txtNewAddress" name="txtNewAddress" rows="3" cols="40" disabled></textarea>
-								
 								
 								<br/><br/>
 								
 								<!-- PAYMENT -->
 								<label for='paymentType'>Please select your Payment Type: </label>  
 								<br/>
-								<select id='mySelectPaymentMethod' onchange='myFunctionPaymentMethod()'>
-									<option value="Cash">Cash</option>
-									<option value="Credit Card">Credit Card</option>
-								</select>
+								<form method='post'>
+								
+									<select id='mySelectPaymentMethod' onchange='myFunctionPaymentMethod()' name='paymentType'>
+										<option value="Cash" >Cash</option>
+										<option value="Credit Card">Credit Card</option>
+									</select>
+									
+									<input type='submit' name='btnSubmitPaymentType' value='Select Payment Type'/>
+								</form>
+								
+								<?php
+										//Payment dropdownlist
+										if (isset($_POST['btnSubmitPaymentType'])){
+											$_SESSION['paymentType'] = $_POST['paymentType'];
+										}
+								?>
 								
 								<script>
 									function myFunctionPaymentMethod() {
@@ -522,40 +548,129 @@
 								</br>
 								</br>
 								
-								<?php 
-								
+								<?php 		
 								$sessGetCartTotalAmount = $_SESSION["getCartTotalAmount"];
 								$sessGetminmonetaryamount = $_SESSION["getminmonetaryamount"];
+								$sessGetFinalTotalAmount = $_SESSION["getFinalTotalAmount"];
+								$sessGetDeliveryLocation= $_SESSION["deliveryLocation"];
 								
+								$sessGetPromotionId = $_SESSION["storePromotionId"];
 								if($sessGetCartTotalAmount >= $minmonetaryamount){
-								echo"</br>";																																								
-								$_SESSION["checkoutStatus"] = 2;
-								echo "*************Can Checkout: ". $_SESSION[ "checkoutStatus"];
-								echo "
-								<form id='checkoutTrigger' name='checkoutTrigger' method=POST onsubmit='return validate2()'>
-								<input type='submit' value='Checkout'/>
-								</form>";
-								}
-								
-								else{
-								echo"</br>";
-								$_SESSION["checkoutStatus"] = 1;
-								echo "*************Cannot Check out: ". $_SESSION[ "checkoutStatus"];
-								echo "
-								<form id='finfo' name='finfo' method=POST onsubmit='return validate()'>
-								<input type='submit' value='Checkout'/>
-								</form>";
-								}
-								
-								?>
-								
-								<?php
-								if(isset($_POST['checkoutTrigger'])){
+									echo"</br>";				
+									unset($_SESSION["checkoutStatus"]);	
+									
+									echo "
+										<form id='checkoutTrigger' name='checkoutTriggerForm' method='POST' onsubmit='return validate2();'>
+										<input type='submit' value='Checkout' name='checkoutTrigger'/>
+										</form>";
+									
+									//Checkout Transaction Start 								
+									if (isset($_POST['checkoutTrigger']))
+									{
+										$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres")
+										or die ("Could not connect to server\n");
+														
+										$username = $_SESSION['username'];																	
+
+										$db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+										$result = pg_query($db,"SELECT distinct s.quantity AS quantityRequired, s.name AS foodName, r.restaurantid AS restaurantId, rf.dailyLimit FROM shoppingcart s, restaurant r, restaurantfood rf  
+										WHERE ischeckout = false AND s.name = rf.name AND s.restaurantid = rf.restaurantid AND s.restaurantid = r.restaurantid AND 
+										customerid IN (SELECT customerid from users u, customers c where u.username='$username' and u.userid = c.userid);");
+									
+										$arr = pg_fetch_all($result);									
+										//print_r($arr);
 										
-								
-								}								
+										echo "<br/>";
+										$_SESSION['arrayOfFoodInShoppingCart'] = $arr;	
+										echo "<br/>";
+
+										pg_query("BEGIN") or die("Could not start transaction\n");
+												
+										foreach($_SESSION['arrayOfFoodInShoppingCart'] as $key => $value) {
+												echo "<br/>";
+												$arrTest = array_values($value);
+												
+												/*
+												echo "*********Quantity: " . $arrTest[0] . "<br/>";
+												echo "*********Food Name: " . $arrTest[1]. "<br/>";
+												echo "*********RestaurantID: " . $arrTest[2]. "<br/>";
+												echo "*********DailyLimit: " . $arrTest[3]. "<br/>";
+												*/
+												
+												$_SESSION['restaurantId'] = $arrTest[2];
+												
+												if ($arrTest[3] <= 0)
+												{
+													$_SESSION['checkoutStatus'] = 1;
+													break;
+													return;
+												}
+												$result1 = pg_query($db,"SELECT dailyLimit FROM restaurantfood where name='$arrTest[1]' and restaurantId=$arrTest[2]");
+											
+												while($row = pg_fetch_row($result1)){
+														$dailyLimit = $row[0];								
+												
+														if ($dailyLimit < $arrTest[0] || $dailyLimit <= 0)
+														{
+															$_SESSION["checkoutStatus"] = 1;
+															echo "<script> window.location.replace('retrieveShoppingCart.php');</script>";
+															break;
+															return;
+														}
+														else{
+															$_SESSION['checkoutStatus'] = 2;
+														}
+												}
+										
+												$res1 = pg_query("UPDATE restaurantfood SET dailylimit = dailylimit - $arrTest[0] WHERE name='$arrTest[1]' and restaurantid = $arrTest[2];");
+												$res2 = pg_query("UPDATE restaurantfood SET availabilityStatus = false WHERE dailyLimit = 0;");
+									
+												echo "<br/>";
+												echo "<br/>";
+										}
+												
+												if ($sessGetPromotionId != null){
+													$res3 = pg_query("INSERT INTO Orders (totalOrderCost, orderDateTime, deliveryLocation, deliveryFee, promotionId) VALUES ($sessGetFinalTotalAmount, current_timestamp, '$sessGetDeliveryLocation', 5,  $sessGetPromotionId) ");
+												}
+												else{									
+													$res4 = pg_query("INSERT INTO Orders (totalOrderCost, orderDateTime, deliveryLocation, deliveryFee) VALUES ($sessGetFinalTotalAmount, current_timestamp, '$sessGetDeliveryLocation', 5)");
+												}
+												
+												$sessGetPaymentType = $_SESSION['paymentType'];
+												$res5 = pg_query("INSERT INTO Payment (paymentType, paymentAmount, orderId) values ('$sessGetPaymentType', $sessGetFinalTotalAmount, (select max(orderId) FROM Orders))");
+												
+												$loggedInCustomerId = $_SESSION['loggedInCustomerId'];
+												$res6 = pg_query("INSERT INTO Delivery (deliveryLocation, customerId, orderedTimestamp, orderId) VALUES('$sessGetDeliveryLocation', $loggedInCustomerId, (select orderDateTime FROM Orders WHERE orderId = (select max(orderId) FROM Orders)), (select max(orderId) FROM Orders))");
+												
+												$sessGetRestaurantId = $_SESSION['restaurantId'];
+												$res7 = pg_query("INSERT INTO Completes (restaurantId, customerId, paymentId, orderId) VALUES ($sessGetRestaurantId, $loggedInCustomerId, (select max(paymentId) from payment), (select max(orderId) from orders))");
+												
+												$res8 = pg_query("UPDATE shoppingcart SET isCheckout = true WHERE customerId = $loggedInCustomerId");
+												
+												if ($res1 && $res2 && ($res3 || $res4) && $res5 && $res6 && $res7 && $res8) {
+													//echo "Commiting transaction\n";
+													pg_query("COMMIT") or die("Transaction commit failed\n");
+													$_SESSION["checkoutStatus"] = 2;
+													echo "<script> alert('Your order has been confirmed!'); window.location.replace('retrieveShoppingCart.php');</script>";
+												} else {
+													//echo "Rolling back transaction\n";
+													pg_query("ROLLBACK") or die("Transaction rollback failed\n");
+													$_SESSION["checkoutStatus"] = 1;
+													echo "<script> alert('There is an issue processing your order!');</script>";
+												}		
+														
+										pg_close($db); 
+										//Checkout Transaction End
+									}
+								}
+								else
+								{
+									echo "
+										<form id='checkoutTrigger' name='checkoutTriggerForm' method='POST' onsubmit='return validate();'>
+										<input type='submit' value='Checkout' name='checkoutTrigger'/>
+										</form>";
+								}
 								?>
-								
                                 <br/><br/>
                             </div>																
                         </div>
