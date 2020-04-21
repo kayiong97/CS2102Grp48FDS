@@ -179,6 +179,7 @@ CREATE TABLE payment (
 	paymentType varchar(20) NOT NULL,
 	paymentAmount float NOT NULL,
 	orderId integer,
+	paymentCardNumber varchar(100), 
 	FOREIGN KEY (orderId) REFERENCES orders 
 );
 
@@ -333,11 +334,11 @@ INSERT INTO stores(customerId, deliveryId) values (2, 8);
 INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Cash', 30, 1);
 INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Cash', 40, 2);
 INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Cash', 50, 3);
-INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Visa', 55, 4);
-INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Visa', 60, 5);
-INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Masters', 35, 6);	
-INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Masters', 45, 7);
-INSERT INTO payment(paymentType, paymentAmount, orderId) values ('Masters', 100, 8);
+INSERT INTO payment(paymentType, paymentAmount, orderId, paymentCardNumber) values ('Visa', 55, 4, '1000200030004000');
+INSERT INTO payment(paymentType, paymentAmount, orderId, paymentCardNumber) values ('Visa', 60, 5, '1000200030004000');
+INSERT INTO payment(paymentType, paymentAmount, orderId, paymentCardNumber) values ('Masters', 35, 6, '1000200030004000');	
+INSERT INTO payment(paymentType, paymentAmount, orderId, paymentCardNumber) values ('Masters', 45, 7, '1000200030004000');
+INSERT INTO payment(paymentType, paymentAmount, orderId, paymentCardNumber) values ('Masters', 100, 8, '1000200030004000');
 
 INSERT INTO creditCardDetails(cardNumber, cardHolderName, cvvNumber, expiryMonth, expiryYear, customerId) 
 values ('5264710324441111', 'Lee Xiao Bin', 123, 10, 2020, 2);

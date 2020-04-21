@@ -408,12 +408,19 @@ error_reporting(E_ERROR | E_PARSE);
 								<?php
 										$link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
-										$query2 = "select deliverylocation from delivery d
+										/*$query2 = "select deliverylocation from delivery d
 										JOIN stores s on s.deliveryId = d.deliveryId
 										JOIN customers c on s.customerId = c.customerId
 										JOIN users u on u.userId = c.userId
 										WHERE u.username = '$username'
+										ORDER BY d.orderedTimestamp DESC LIMIT 5;";*/
+										
+										$query2 = "select deliverylocation from delivery d										
+										JOIN customers c on d.customerId = c.customerId
+										JOIN users u on u.userId = c.userId
+										WHERE u.username = '$username'
 										ORDER BY d.orderedTimestamp DESC LIMIT 5;";
+										
 										$res2 = pg_query($link, $query2);
 
 										echo "<form method='post'>";
@@ -433,7 +440,15 @@ error_reporting(E_ERROR | E_PARSE);
 										
 										echo "<input type='submit' name='btnSubmitDeliveryLocation' value='Select Delivery Location'/>
 										</form>";
-								
+										
+										//Start
+										echo "<form method='post'>";
+										
+										echo "<input type='text' id='deliveryLocation' name='deliveryLocation'/>";
+										
+										echo "<input type='submit' name='btnSubmitDeliveryLocationManual' value='Enter Your New Delivery Location'/>
+										</form>";
+										//End
 										
 										echo "<script>
 											function myFunctionDeliveryLocation() {
@@ -452,12 +467,16 @@ error_reporting(E_ERROR | E_PARSE);
 										if (isset($_POST['btnSubmitDeliveryLocation'])){
 											$_SESSION['deliveryLocation'] = $_POST['deliveryLocation'];
 										}
+										
+										if (isset($_POST['btnSubmitDeliveryLocationManual'])){
+											$_SESSION['deliveryLocation'] = $_POST['deliveryLocation'];
+										}
 								?>
 								
 								<br/>
-								Not listed here? Enter an address here: 
+								<!--Not listed here? Enter an address here: 
 								<textarea id="txtNewAddress" name="txtNewAddress" rows="3" cols="40" disabled></textarea>
-								
+								-->
 								<br/><br/>
 								
 								<!-- PAYMENT -->
@@ -637,7 +656,14 @@ error_reporting(E_ERROR | E_PARSE);
 												}
 												
 												$sessGetPaymentType = $_SESSION['paymentType'];
-												$res5 = pg_query("INSERT INTO Payment (paymentType, paymentAmount, orderId) values ('$sessGetPaymentType', $sessGetFinalTotalAmount, (select max(orderId) FROM Orders))");
+												$sessGetCCDetails = $_SESSION['selectedCreditCardNumber'];
+												
+												if($sessGetPaymentType != 'Cash'){
+													$res5 = pg_query("INSERT INTO Payment (paymentType, paymentAmount, orderId, paymentcardnumber) values ('$sessGetPaymentType', $sessGetFinalTotalAmount, (select max(orderId) FROM Orders), '$sessGetCCDetails')");
+												}
+												else{
+													$res9 = pg_query("INSERT INTO Payment (paymentType, paymentAmount, orderId) values ('$sessGetPaymentType', $sessGetFinalTotalAmount, (select max(orderId) FROM Orders))");
+												}
 												
 												$loggedInCustomerId = $_SESSION['loggedInCustomerId'];
 												$res6 = pg_query("INSERT INTO Delivery (deliveryLocation, customerId, orderedTimestamp, orderId) VALUES('$sessGetDeliveryLocation', $loggedInCustomerId, (select orderDateTime FROM Orders WHERE orderId = (select max(orderId) FROM Orders)), (select max(orderId) FROM Orders))");
@@ -646,12 +672,14 @@ error_reporting(E_ERROR | E_PARSE);
 												$res7 = pg_query("INSERT INTO Completes (restaurantId, customerId, paymentId, orderId) VALUES ($sessGetRestaurantId, $loggedInCustomerId, (select max(paymentId) from payment), (select max(orderId) from orders))");
 												
 												$res8 = pg_query("UPDATE shoppingcart SET isCheckout = true WHERE customerId = $loggedInCustomerId");
-												
-												if ($res1 && $res2 && ($res3 || $res4) && $res5 && $res6 && $res7 && $res8) {
-													//echo "Commiting transaction\n";
+												$res10 = pg_query("DELETE FROM shoppingcart WHERE customerId = $loggedInCustomerId and isCheckout = true");
+												if ($res1 && $res2 && ($res3 || $res4) && ($res5 || $res9) && $res6 && $res7 && $res8 && $res10) {
+													//echo "Commiting transaction\n";																								
 													pg_query("COMMIT") or die("Transaction commit failed\n");
-													$_SESSION["checkoutStatus"] = 2;
+													$_SESSION["checkoutStatus"] = 2;													
 													echo "<script> alert('Your order has been confirmed!'); window.location.replace('retrieveShoppingCart.php');</script>";
+													
+													
 												} else {
 													//echo "Rolling back transaction\n";
 													pg_query("ROLLBACK") or die("Transaction rollback failed\n");

@@ -90,6 +90,9 @@ error_reporting(E_ERROR | E_PARSE);
 
                         <a href="login.php" class="section-btn" id="navLogout" <?php if( isset( $_SESSION[ "username"] ) ){ echo 'style="display:inline-block;"'; }else{ echo 'style="display:none;"'; } ?>>
                     Logout</a>
+					
+					<a href="retrieveShoppingCart.php" class="section-btn" id="navLogout" <?php if( isset( $_SESSION[ "username"] ) ){ echo 'style="display:inline-block;"'; }else{ echo 'style="display:none;"'; } ?>>
+                    My Cart</a>
                     </ul>
                 </div>
 
