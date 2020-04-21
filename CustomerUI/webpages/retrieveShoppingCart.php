@@ -1,12 +1,12 @@
 <?php
     session_start();
 	
-	
 //Hiding Errors 
 error_reporting(E_ERROR | E_PARSE);
 
-?>
 
+?>
+	
     <!DOCTYPE html>
     <html lang="en">
 
@@ -178,7 +178,7 @@ error_reporting(E_ERROR | E_PARSE);
             <section id="about" data-stellar-background-ratio="0.5">
 
                 <div class="container">
-                    <div class="row">
+                    <div class="row" style="width: 200%;">
                         <h2><u>>> My Shopping Cart <?php echo "(".$_SESSION[ "username"].")"; ?></u></h2> 
 
                         <div class="col-md-6 col-sm-12">
@@ -284,29 +284,39 @@ error_reporting(E_ERROR | E_PARSE);
 								</form>";
 								
 								if (isset($_POST['btnRetrievePromotionCode'])){
-								$result2 = pg_query($db, "SELECT p.discountamount, p.promotionId FROM promotion p WHERE information = '$_POST[information]' AND p.restaurantid = $restaurantid;");
-								while($row = pg_fetch_row($result2)){
-								$discountamount = $row[0];
-								$promotionId = $row[1];
+								$result2 = pg_query($db, "SELECT p.discountamount, p.promotionId, p.information FROM promotion p WHERE information = '$_POST[information]' AND p.restaurantid = $restaurantid;");
 								
-								$_SESSION["storePromotionId"] = $promotionId;
-								
-								echo "*************Discount Amount: $" .$discountamount;
-								echo"</br>";
-								
-								if(($cartTotalAmount - $discountamount) > 0){
-								echo "*************Total Payable Amount (After Discount): $" . ($cartTotalAmount - $discountamount);
+								if (!pg_num_rows($result2))
+								{
+									echo "<script>alert('This promotion code cannot be applied.')</script>";
 								}
-								else{
-								echo "*************Total Payable Amount (After Discount): $0";	
-								}
+								else 
+								{
+									while($row = pg_fetch_row($result2)){
+										$discountamount = $row[0];
+										$promotionId = $row[1];
+										
+										$_SESSION["storePromotionId"] = $promotionId;
+										$_SESSION["storePromotionCode"] = $row[2];	
+																		
+										echo "*************Discount Amount: $" .$discountamount;
+										echo"</br>";
+										
+										if(($cartTotalAmount - $discountamount) > 0){
+										echo "*************Total Payable Amount (After Discount): $" . ($cartTotalAmount - $discountamount);
+										}
+										else{
+										echo "*************Total Payable Amount (After Discount): $0";	
+										}
+									}
 								}
 
 								}
 								
 								$_SESSION["getCartTotalAmount"] = $cartTotalAmount;
 								$_SESSION["getminmonetaryamount"] = $minmonetaryamount;
-								$_SESSION["getFinalTotalAmount"] = $cartTotalAmount - $discountamount;								
+								$_SESSION["getFinalTotalAmount"] = $cartTotalAmount - $discountamount;		
+						
 								?>
 								
 																
@@ -444,7 +454,7 @@ error_reporting(E_ERROR | E_PARSE);
 										//Start
 										echo "<form method='post'>";
 										
-										echo "<input type='text' id='deliveryLocation' name='deliveryLocation'/>";
+										echo "<input type='text' id='deliveryLocationManual' name='deliveryLocationManual'/>";
 										
 										echo "<input type='submit' name='btnSubmitDeliveryLocationManual' value='Enter Your New Delivery Location'/>
 										</form>";
@@ -461,19 +471,22 @@ error_reporting(E_ERROR | E_PARSE);
 											}
 											</script>";
 								?>
-											
+									
 								<?php
 										//deliveryLocation dropdownlist
 										if (isset($_POST['btnSubmitDeliveryLocation'])){
 											$_SESSION['deliveryLocation'] = $_POST['deliveryLocation'];
 										}
+										//else
+										//	unset($_SESSION['deliveryLocation']);
 										
 										if (isset($_POST['btnSubmitDeliveryLocationManual'])){
-											$_SESSION['deliveryLocation'] = $_POST['deliveryLocation'];
+											$_SESSION['deliveryLocation'] = $_POST['deliveryLocationManual'];
 										}
+										//else
+										//	unset($_SESSION['deliveryLocation']);
 								?>
-								
-								<br/>
+									
 								<!--Not listed here? Enter an address here: 
 								<textarea id="txtNewAddress" name="txtNewAddress" rows="3" cols="40" disabled></textarea>
 								-->
@@ -563,9 +576,37 @@ error_reporting(E_ERROR | E_PARSE);
 									$_SESSION['selectedCreditCardNumber'] = $_POST['cardNumber'];
 								}								
 								?>
+			
+								</br>
+								</br>
+														
+								<!-- Summary details of selected data. -->														
+								<label name="selectedThings">
+								<?php 
 								
-								</br>
-								</br>
+								if (isset($_SESSION['deliveryLocation'])) { 
+									echo "You have selected delivery location: ".$_SESSION[deliveryLocation];
+									echo "<br/>";
+								} 
+								if (isset($_SESSION['paymentType']))
+								{
+									echo "You have selected payment type: ".$_SESSION['paymentType'];
+									echo "<br/>";
+								}
+								if (isset($_SESSION['selectedCreditCardNumber']))
+								{
+									echo "You have selected credit card: ".$_SESSION['selectedCreditCardNumber'];
+									echo "<br/>";
+								}
+								if (isset($_SESSION['storePromotionCode']))
+								{
+									echo "You have selected promotion code: ".$_SESSION['storePromotionCode'];
+									echo "<br/>";
+								}		
+								
+								?>
+								</label>
+								
 								
 								<?php 		
 								$sessGetCartTotalAmount = $_SESSION["getCartTotalAmount"];
@@ -582,6 +623,7 @@ error_reporting(E_ERROR | E_PARSE);
 										<form id='checkoutTrigger' name='checkoutTriggerForm' method='POST' onsubmit='return validate2();'>
 										<input type='submit' value='Checkout' name='checkoutTrigger'/>
 										</form>";
+								
 									
 									//Checkout Transaction Start 								
 									if (isset($_POST['checkoutTrigger']))
@@ -676,7 +718,13 @@ error_reporting(E_ERROR | E_PARSE);
 												if ($res1 && $res2 && ($res3 || $res4) && ($res5 || $res9) && $res6 && $res7 && $res8 && $res10) {
 													//echo "Commiting transaction\n";																								
 													pg_query("COMMIT") or die("Transaction commit failed\n");
-													$_SESSION["checkoutStatus"] = 2;													
+													$_SESSION["checkoutStatus"] = 2;				
+
+													unset($_SESSION['deliveryLocation']);
+													unset($_SESSION['paymentType']);
+													unset($_SESSION['selectedCreditCardNumber']);
+													unset($_SESSION['storePromotionCode']);
+													
 													echo "<script> alert('Your order has been confirmed!'); window.location.replace('retrieveShoppingCart.php');</script>";
 													
 													
@@ -700,6 +748,7 @@ error_reporting(E_ERROR | E_PARSE);
 								}
 								?>
                                 <br/><br/>
+
                             </div>																
                         </div>
 

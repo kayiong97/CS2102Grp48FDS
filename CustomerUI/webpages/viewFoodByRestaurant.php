@@ -211,13 +211,18 @@ error_reporting(E_ERROR | E_PARSE);
                                 ?>
                                 
                                 <?php
-                                                               
+                                
+/*                                
 								echo "restaurantIdClickedByUser: ".$_SESSION["restaurantIdClickedByUser"];
 								echo "<br/>";
                                 echo "loggedInCustomerId: ".$_SESSION["loggedInCustomerId"];
-                                
+*/                               
                                     if(isset($_POST['btnAddToCart'])){
-                                        
+                                                    unset($_SESSION['deliveryLocation']);
+													unset($_SESSION['paymentType']);
+													unset($_SESSION['selectedCreditCardNumber']);
+													unset($_SESSION['storePromotionCode']);
+                                                    
                                             $restaurantIdClickedByUser = $_SESSION["restaurantIdClickedByUser"];
                                             $foodNameToAddToCart = $_POST['foodToAddToCart'];
                                             $loggedInCustomerId = $_SESSION["loggedInCustomerId"];

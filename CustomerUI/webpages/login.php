@@ -14,11 +14,17 @@ if(isset($_POST['btnLogin'])){
         if ($row[0] == $username && $row[1] == $password) {
             $_SESSION["username"] = $username;
 			$_SESSION['loggedInCustomerId'] = $row[2];
+            
+            unset($_SESSION['deliveryLocation']);
+            unset($_SESSION['paymentType']);
+            unset($_SESSION['selectedCreditCardNumber']);
+            unset($_SESSION['storePromotionCode']);
+                                                    
             header('Location: /cs2102grp48fds/CustomerUI/webpages/index.php');
         }
         
     }
-    echo "Sorry, you have entered incorrect username/password.";     
+    echo "<script>alert('Sorry, you have entered incorrect username/password.');</script>";     
 }
 
 ?> 

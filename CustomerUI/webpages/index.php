@@ -57,6 +57,8 @@ error_reporting(E_ERROR | E_PARSE);
             
             $orderId = $_POST['orderId'];
             
+            echo "***************** ".$reviewOrderDescription. "          ;             ".$ratingsForDelivery."                   ;                  ".$orderId;
+            
             $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");   
             $query2 = "UPDATE completes SET hasAskedForReviewRating = true, 
             reviewDescriptionForOrder = '$reviewOrderDescription', ratingsForDelivery = '$ratingsForDelivery' 

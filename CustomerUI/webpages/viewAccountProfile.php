@@ -109,6 +109,10 @@
 
                         <a href="login.php" class="section-btn" id="navLogout" <?php if( isset( $_SESSION[ "username"] ) ){ echo 'style="display:inline-block;"'; }else{ echo 'style="display:none;"'; } ?>>
                     Logout</a>
+                    
+                    	<a href="retrieveShoppingCart.php" class="section-btn" id="navLogout" <?php if( isset( $_SESSION[ "username"] ) ){ echo 'style="display:inline-block;"'; }else{ echo 'style="display:none;"'; } ?>>
+                    My Cart</a>
+                    
                     </ul>
                 </div>
 
@@ -160,34 +164,7 @@
                             <h4>Contact No: <u style="margin-left:10%;"> <?php echo($_SESSION["contactNo"] );?> </u></h4>
 
                             <h4>Membership Points: <u style="margin-left:0%;"> <?php echo($_SESSION["accumulatedPoints"]);?> </u></h4>
-                          
-<!--
-                            <h4>Delivery Locations: <u style="margin-left:20%;">
-                                <?php
-
-                                $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
-
-                                $query2 = "select deliverylocation from delivery d
-                                JOIN stores s on s.deliveryId = d.deliveryId
-                                JOIN customers c on s.customerId = c.customerId
-                                JOIN users u on u.userId = c.userId
-                                WHERE u.username = '$username'
-                                ORDER BY d.orderedTimestamp DESC LIMIT 5;";
-                                $res2 = pg_query($link, $query2);
-
-                                while ($row = pg_fetch_row($res2)) {
-
-                                        $deliveryLocation = $row[0];
-                                        $_SESSION["deliveryLocation"] = $deliveryLocation;
-
-                                        echo "<br/> $deliveryLocation <br/>";
-
-                                    }
-
-                                ?></u>
-                            </h4>
- -->                           
- 
+         
                             <div>
                             <div class="col-50">
                                 <h3>Credit Card Details</h3>
@@ -254,45 +231,52 @@
                                 
                                 <hr/>
                                 
-                                <h4 style="border: 1px solid;">Register New Credit Card</h4>
-                                <br/>
-                                <label for="fname">Accepted Cards</label>
-                                <div class="icon-container">
-                                  <i class="fa fa-cc-visa" style="color:navy;"></i>
-                                  <i class="fa fa-cc-amex" style="color:blue;"></i>
-                                  <i class="fa fa-cc-mastercard" style="color:red;"></i>
-                                  <i class="fa fa-cc-discover" style="color:orange;"></i>
-                                </div>
-                                <label for="cname">Name on Card</label>
-                                <input type="text" id="cname" name="cardname" placeholder="John More Doe">
-                                <br/>
-                                <label for="ccnum">Credit card number</label>
-                                <input type="text" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444">
-                                <br/>
-                                <label for="expyear">Expiry Year</label>
-                                <input type="text" id="expyear" name="expyear" placeholder="2018">
-                                <br/>
-                                <label for="expmonth">Expiry Month</label>
-                                <input type="text" id="expmonth" name="expmonth" placeholder="12">
-                                <br/>
-                                <label for="cvv">CVV</label>
-                                <input type="text" id="cvv" name="cvv" placeholder="352">
-                                <br/>
-                                
-                                <input type="submit" value="Register Credit Card Details" name="btnRegisterCreditCardDetails"/>
-                                
+                                <form method='post'>
+                                    <h4 style="border: 1px solid;">Register New Credit Card</h4>
+                                    <br/>
+                                    <label for="fname">Accepted Cards</label>
+                                    <div class="icon-container">
+                                      <i class="fa fa-cc-visa" style="color:navy;"></i>
+                                      <i class="fa fa-cc-amex" style="color:blue;"></i>
+                                      <i class="fa fa-cc-mastercard" style="color:red;"></i>
+                                      <i class="fa fa-cc-discover" style="color:orange;"></i>
+                                    </div>
+                                    <label for="cname">Name on Card</label>
+                                    <input type="text" id="cname" name="cardname" placeholder="John More Doe">
+                                    <br/>
+                                    <label for="ccnum">Credit card number</label>
+                                    <input type="text" id="ccnum" name="cardnumber" placeholder="5264710312229301">
+                                    <br/>
+                                    <label for="expyear">Expiry Year</label>
+                                    <input type="text" id="expyear" name="expyear" placeholder="2018">
+                                    <br/>
+                                    <label for="expmonth">Expiry Month</label>
+                                    <input type="text" id="expmonth" name="expmonth" placeholder="12">
+                                    <br/>
+                                    <label for="cvv">CVV</label>
+                                    <input type="text" id="cvv" name="cvv" placeholder="352">
+                                    <br/>
+                                    
+                                    <input type="submit" value="Register Credit Card Details" name="btnRegisterCreditCardDetails"/>
+                                </form>
                                 <?php
                                 if(isset($_POST['btnRegisterCreditCardDetails'])){
+                       
+                                    $customerId = $_SESSION['loggedInCustomerId'];
                        
                                     $db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
 
                                     $query = "INSERT INTO creditCardDetails(cardNumber, cardHolderName, cvvNumber, expiryMonth, expiryYear, customerId)
-                                    VALUES ('$_POST[cardnumber]', '$_POST[cardname]','$_POST[cvv]','$_POST[expmonth]', '$_POST[expyear]')";
-                                    $result = pg_query($query); 
+                                    VALUES ('$_POST[cardnumber]', '$_POST[cardname]',$_POST[cvv],$_POST[expmonth], $_POST[expyear], $customerId)";
+                                    $result = pg_query($db, $query); 
                                     
                                     if ($result)
                                     {
                                         echo "<script>alert('This credit card has been registered.')</script>";
+                                    }
+                                    else
+                                    {
+                                        echo "<script>alert('This credit card cannot be registered.')</script>";
                                     }
                                 }
                                 ?>

@@ -17,31 +17,23 @@ if(isset($_POST['btnRegister'])){
     $res = pg_query($link, $query);
     
      while ($row = pg_fetch_row($res)) {
-        echo "Sorry, this username has been taken. Please try other username.";
+        echo "<script>alert('Sorry, this username has been taken. Please try other username.');</script>";
         break;
     }   
-/*
-    $query2 = "INSERT INTO USERS(name, username, password, contactNo) 
-    SELECT '$_POST[name]', '$_POST[username]', '$_POST[password]', '$_POST[contactNo]'
-    WHERE NOT EXISTS (SELECT 1 FROM Users WHERE username = '$_POST[username]');";
-    $res2 = pg_query($link, $query2);
-        
-    $query3 = "INSERT INTO CUSTOMERS (accumulatedPoints, userId) 
-    values(0, (SELECT userId FROM USERS WHERE username = '$_POST[username]'));";
-    $res3 = pg_query($link, $query3);
-    if ($res3) {
-        echo "Account has been created successfully. You may login now.";
-    }
-*/  
-
-    $query2 = "INSERT INTO USERS(name, username, password, contactNo) 
-    values('$_POST[name]', '$_POST[username]', '$_POST[password]', '$_POST[contactNo]'); 
+    
+    $query2 = "INSERT INTO USERS(name, username, password, contactNo, role) 
+    values('$name', '$username', '$password', '$contactNo', 'Customer'); 
+    
     INSERT INTO CUSTOMERS (accumulatedPoints, userId) 
-    values(0, (SELECT userId FROM USERS WHERE username = '$_POST[username]'));";
+    values(0, (SELECT userId FROM USERS WHERE username = '$username'));";
     
     $res2 = pg_query($link, $query2);
     if ($res2) {
-        echo "Account has been created successfully. You may login now.";
+        echo "<script>alert('Account has been created successfully. You may login now.');</script>";
+    }
+    else
+    {
+        echo "<script>alert('Sorry, this username has been taken. Please try other username.');</script>";
     }
 }
 
@@ -211,7 +203,7 @@ tr {
 
                     <tr>
                         <td>
-                            <button type="submit" name="btnRegister">Register</button>
+                            <input type="submit" name="btnRegister" value="Register"/>
                         </td>
                     </tr>
 
