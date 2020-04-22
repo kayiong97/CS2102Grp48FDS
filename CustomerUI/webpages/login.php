@@ -215,7 +215,10 @@ form {
 </head> 
 
 <body> 
+    <h2 style="text-align: center;">Do not have an account? Click <a href="./register.php">here</a> to register. </h2>
+    
     <form class="modal-content animate" method="post" style="width: 50%;"> 
+        
         <div class="imgcontainer"> 
             <img src="../assets/images/img_avatar2.png" alt="Avatar" class="avatar" id="imageAvatar"> 
         </div> 

@@ -51,6 +51,7 @@ CREATE TABLE fdsManager (
 );
 
 CREATE TABLE rider (
+	rname varchar(100),
 	riderId integer PRIMARY KEY REFERENCES users ON DELETE CASCADE	 
 );
 
@@ -80,6 +81,7 @@ CREATE TABLE weeklyWorkSchedule (
 
 CREATE TABLE shift (
 	shiftId integer GENERATED ALWAYS AS IDENTITY,
+	shift integer,
 	PRIMARY KEY (shiftId)
 );
 
@@ -96,7 +98,8 @@ CREATE TABLE ftOwns (
 	workingDayId integer,
 	shiftId integer,
 	month integer,
-	PRIMARY KEY (riderId, workingDayId, shiftId),
+	year integer,
+	PRIMARY KEY (riderId, workingDayId, shiftId, month, year),
 	FOREIGN KEY (riderId) REFERENCES fullTimeRider,
 	FOREIGN KEY (workingDayId) REFERENCES workingDays,
 	FOREIGN KEY (shiftId) REFERENCES shift
@@ -272,10 +275,10 @@ INSERT INTO restaurantStaff(userId) VALUES (2);
 INSERT INTO fdsManager(userId) VALUES (3);
 INSERT INTO fdsManager(userId) VALUES (4);
 
-INSERT INTO rider(riderId) VALUES (5);
-INSERT INTO rider(riderId) VALUES (6);
-INSERT INTO rider(riderId) VALUES (7);
-INSERT INTO rider(riderId) VALUES (8);
+INSERT INTO rider(riderId, rname) VALUES (5, 'Kee Zhong Ping');
+INSERT INTO rider(riderId, rname) VALUES (6, 'Joel Poh Ming Zhong');
+INSERT INTO rider(riderId, rname) VALUES (7, 'Ong Ka Yi');
+INSERT INTO rider(riderId, rname) VALUES (8, 'Chu Mei Ting');
 
 INSERT INTO partTimeRider(riderId, weeklyBaseSalary) VALUES (5, 1500);
 INSERT INTO partTimeRider(riderId, weeklyBaseSalary) VALUES (6, 2500);
