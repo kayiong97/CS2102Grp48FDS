@@ -197,9 +197,7 @@ error_reporting(E_ERROR | E_PARSE);
                                                 } else { 
                                                     echo "<input type='submit' id='btnAddToCart' name='btnAddToCart' value='Add to Cart' style='background-color:orange' />";
                                                 } 
-												
-												
-												
+                                            	
 												echo "<input type='hidden' id='foodToAddToCart' name='foodToAddToCart' value='$name'/>
                                                 </div></td>
                                                 </form>"; 

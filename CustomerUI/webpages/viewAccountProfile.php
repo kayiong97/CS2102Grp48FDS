@@ -281,6 +281,49 @@
                                 }
                                 ?>
                                 
+                                <hr/>
+                                
+                                <div class="col-50">
+                                <h3>My Order History</h3>
+                                
+                                <h4 style="border: 1px solid;">Past Orders</h4>
+                                <br/>
+                                <?php
+                                
+                                    $customerId = $_SESSION['loggedInCustomerId'];
+                                    $db = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+                                    $result = pg_query($db,"select cc.orderId, cc.completedDateTime, (SELECT name FROM restaurant WHERE restaurantid = cc.restaurantId), o.totalOrderCost from completes cc NATURAL JOIN orders o WHERE cc.customerid = $customerId AND cc.completedDateTime IS NOT NULL");
+                                    
+                                    echo "<table>";
+                                    
+                                    echo" 
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Completed Date Time</th>
+                                        <th>Restaurant ID</th>
+                                        <th>Total Order Cost</th>
+                                    </tr>";
+                                    
+                                    while ($row = pg_fetch_row($result)) {
+                                        $orderId = $row[0];
+                                        $completedDateTime = $row[1];
+                                        $restaurantName = $row[2];
+                                        $totalOrderCost = $row[3];
+                                                
+                                        echo "<tr>";
+                                        echo "<td align='center' width='200'>" . $orderId . "</td>";
+                                        echo "<td align='center' width='200'>" . $completedDateTime . "</td>";
+                                        echo "<td align='center' width='200'>" . $restaurantName . "</td>";
+                                        echo "<td align='center' width='200'>" . $totalOrderCost . "</td>";
+                                        echo "</tr>";
+                                    }
+                                        echo "</table>";
+                                ?>
+                                
+                                </div>
+                                
+                                
+                                
                               </div>
                             </div>
                             
