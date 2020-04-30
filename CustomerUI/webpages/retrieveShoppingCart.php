@@ -388,7 +388,8 @@ error_reporting(E_ERROR | E_PARSE);
 									
 									while ($row = pg_fetch_row($res1)) {
 										$dailyLimitForThisFood = $row[0];
-										if ($quantity > $dailyLimitForThisFood)
+										
+										if ($quantity >= $dailyLimitForThisFood)
 										{
 											echo "<script> alert('Quantity > Daily Limit! Cannot add anymore quantity. Reach max already.'); </script>";
 										}

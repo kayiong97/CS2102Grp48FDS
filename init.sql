@@ -374,3 +374,26 @@ INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, rati
 values('2019-11-12 15:23:54', 3, 7, 1, 0, null, 7, 7, false);
 INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
 values('2019-11-15 15:23:54', 4, 8, 2, 0, null, 8, 8, false);
+
+
+CREATE OR REPLACE FUNCTION checkDailyLimit() RETURNS TRIGGER AS $$
+DECLARE 
+dailyLimit2 INTEGER;
+
+BEGIN
+	SELECT dailyLimit FROM RestaurantFood rf 
+	WHERE rf.restaurantId = NEW.restaurantId AND name = NEW.name
+	INTO dailyLimit2;
+	
+	IF dailyLimit2 < 0 THEN 
+		RAISE exception 'Daily limit for this food item has exceeded.';
+	END IF;
+	
+	RETURN NULL;
+END;
+$$ LANGUAGE plpgsql; 
+
+DROP TRIGGER IF EXISTS dailyLimit_trigger ON restaurantFood CASCADE;
+CREATE TRIGGER dailyLimit_trigger
+AFTER UPDATE of dailyLimit ON restaurantFood
+FOR EACH ROW EXECUTE FUNCTION checkDailyLimit();
