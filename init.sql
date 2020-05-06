@@ -115,7 +115,7 @@ CREATE TABLE ptOwns (
 CREATE TABLE restaurant (
 	restaurantId integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	name varchar(100) NOT NULL,
-	contactNo varchar(100) NOT NULL,
+	contactNo varchar(8) NOT NULL,
 	address varchar (200) NOT NULL,
 	area varchar (100) NOT NULL,
 	minMonetaryAmount integer
@@ -380,11 +380,11 @@ values('2019-05-24 12:23:54', 4, 8, 1, 4, null, 4, 4, true);
 INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
 values('2019-05-26 12:23:54', 1, 13, 2, 3, null, 5, 5, true);
 INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating)  
-values('2019-06-10 12:23:54', 2, 6, 3, 0, null, 6, 6, false);
+values('2019-06-10 12:23:54', 2, 6, 3, 2, 'Food is so-so.', 6, 6, false);
 INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating)  
 values('2019-10-10 20:23:54', 3, 7, 1, 0, null, 7, 7, false);
 INSERT INTO completes(completedDateTime, restaurantId, riderId, customerId, ratingsForDelivery, reviewDescriptionForOrder, paymentId, orderId, hasAskedForReviewRating) 
-values('2019-10-21 15:23:54', 4, 8, 2, 0, null, 8, 8, false);
+values('2019-10-21 15:23:54', 4, 8, 2, 5, 'Very yummy food!', 8, 8, false);
 
 Insert into workingdays(workingday,workingdayhours) values (1,8);
 Insert into workingdays(workingday,workingdayhours) values (2,8);

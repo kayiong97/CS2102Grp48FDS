@@ -210,17 +210,64 @@ error_reporting(E_ERROR | E_PARSE);
                                                     <h3>$address ($area)</h3>
                                                     <h3>Minimum amount: $$minMonetaryAmount</h3>
                                                     <input type='hidden' name='restaurantIdClickedByUser' value='$row[5]'>
-                      
+                                                    <input type='hidden' name='restaurantNameClickedByUser' value='$row[0]'>
+                          
+                                                    <br/>
+                                                    
+                                                    <input type='submit' id='viewReviewButton' name='btnViewReviewBasedOnRestaurant' value='View Review'/>
+                                                    
                                                     </div></td>
-                                                    </form>"; 
+                                                    </form>";
                                             }
-
-                                        
+                                            
                                         }
                                             echo "</tr>";
                                             echo "</table>";
                                     }
                                 ?>
+                                
+                                
+                                     
+                                <?php 
+                                        if(isset($_POST['btnViewReviewBasedOnRestaurant']))
+                                            {
+                                                $restaurantIdClickedByUser = $_POST['restaurantIdClickedByUser'];  
+                                                $restaurantNameClickedByUser = $_POST['restaurantNameClickedByUser'];             
+                                                
+                                                $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres password=postgres");
+
+                                                $query = "select cc.reviewdescriptionfororder, u.name FROM completes cc NATURAL JOIN customers c NATURAL JOIN users u 
+                                                WHERE cc.restaurantid = $restaurantIdClickedByUser and cc.reviewdescriptionfororder IS NOT NULL;  ";
+                                                
+                                                $res = pg_query($link, $query);
+                                            
+                                                        echo "<table>";
+                                                        echo "<tr>";
+                                                        
+                                                        $num = pg_numrows($res);
+                                                        if ($num == 0)
+                                                        {
+                                                            echo "<th>There are no reviews available for this restaurant <u>".$restaurantNameClickedByUser."</u>...</th>"; 
+                                                        }
+                                                        else{
+                                                            while ($row = pg_fetch_row($res)) 
+                                                                {
+                                                                $reviewDescriptionForOrder = $row[0];
+                                                                $name = $row[1];
+                                                                
+                                                                echo "<th>Here are our reviews from customers for restaurant <u>".$restaurantNameClickedByUser."</u>...</th>";
+                                                                echo "</tr>";
+                                                                
+                                                                echo "<tr>";
+                                                                echo "<td>".$name. "   reviewed '".$reviewDescriptionForOrder."'</td>";
+                                                            }
+                                                        }
+                                                        echo "</tr>";
+                                                        echo "</table>";
+                                            }
+                                    ?>
+                                    
+                                    
                             </div>
                         </div>
 
