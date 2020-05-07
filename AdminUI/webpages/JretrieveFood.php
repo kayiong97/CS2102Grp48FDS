@@ -107,25 +107,6 @@
 				</a>
 			</li>
 			
-			<li class="nav-item active  ">
-            <a class="nav-link" href="AdminReport.php">
-              <i class="material-icons">dashboard</i>
-              <p>Admin Report</p>
-            </a>
-          </li>
-	  <li class="nav-item active  ">
-            <a class="nav-link" href="UpdateRidersInfo.php">
-              <i class="material-icons">dashboard</i>
-              <p>Update Rider Details</p>
-            </a>
-          </li>
-	  <li class="nav-item active  ">
-            <a class="nav-link" href="AdminOrderView.php">
-              <i class="material-icons">dashboard</i>
-              <p>Admin Order View</p>
-            </a>
-          </li>
-			
         </ul>
       </div>
     </div>
@@ -153,7 +134,7 @@
                 </a>
               </li>
 
-              <form action="/cs2102grp48fds/AdminUI/webpages/AdminLogin.php">
+              <form action="/cs2102grp48fds/AdminUI/webpages/3_UserLogin.php">
                 <button class="button">Logout</button>
               </form>              
             </ul>

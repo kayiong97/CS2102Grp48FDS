@@ -28,8 +28,11 @@ $_SESSION['riderId']=null;
       Tip 2: you can also add an image using data-image tag
   -->
       <div class="logo">
-        <a class="simple-text logo-mini">
-          Admin Menu List
+        <a href="http://www.creative-tim.com" class="simple-text logo-mini">
+          CT
+        </a>
+        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+          Creative Tim
         </a>
       </div>
       <div class="sidebar-wrapper">
@@ -70,7 +73,6 @@ $_SESSION['riderId']=null;
                 <a class="nav-link" href="javascript:;">
                   <i class="material-icons">notifications</i> Notifications
                 </a>
-				
               </li>
               <!-- your navbar here -->
             </ul>
@@ -100,7 +102,7 @@ $_SESSION['riderId']=null;
         }else{
 			$role=pg_fetch_object($result2);  
 			if($role!=null){
-		header("Location: 0_Dashboard.php");
+		header("Location: AdminOrderView.php");
 			}else{
 				echo"Wrong Username or Password";
 			}

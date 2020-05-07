@@ -479,24 +479,3 @@ CREATE CONSTRAINT TRIGGER pttimecheck_trigger
 AFTER INSERT ON weeklyworkschedule
 DEFERRABLE INITIALLY IMMEDIATE
 FOR EACH ROW EXECUTE FUNCTION checkwws( );
-
-CREATE OR REPLACE FUNCTION checkShiftMin() RETURNS TRIGGER AS $$
-DECLARE 
-shift INTEGER;
-
-BEGIN
-	SELECT COUNT(*) FROM ftowns WHERE shiftid=NEW.shiftid
-	INTO shift;
-	
-	IF shift > 5 AND EXISTS(SELECT COUNT(*) FROM ftowns group by shiftid having count(*)<5) THEN 
-		RAISE exception 'Please fill other shift first. There is an empty shift';
-	END IF;
-	
-	RETURN NULL;
-END;
-$$ LANGUAGE plpgsql; 
-
-DROP TRIGGER IF EXISTS shiftmin_trigger ON ftowns CASCADE;
-CREATE TRIGGER shiftmin_trigger
-AFTER INSERT ON ftowns
-FOR EACH ROW EXECUTE FUNCTION checkShiftMin();
