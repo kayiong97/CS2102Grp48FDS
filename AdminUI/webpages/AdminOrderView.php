@@ -26,16 +26,69 @@ $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres pa
       Tip 2: you can also add an image using data-image tag
   -->
       <div class="logo">
-        <a href="http://www.creative-tim.com" class="simple-text logo-mini">
-          CT
-        </a>
-        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
-          Creative Tim
+        <a class="simple-text logo-mini">
+          Admin Menu List
         </a>
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
-          <li class="nav-item active  ">
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/2_ViewAllUsers.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Users</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/6_viewAllRiders.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Riders</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/5_ViewAllFdsManager.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>FDS Manager</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/4_ViewAllRestaurantStaff.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Restaurant Staff</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllRestaurants.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Restaurants</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllFoods.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Foods</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllPromotions.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Promotions</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/7_ViewAllCustomerOrder.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Customer Order</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
             <a class="nav-link" href="AdminReport.php">
               <i class="material-icons">dashboard</i>
               <p>Admin Report</p>
@@ -53,19 +106,7 @@ $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres pa
               <p>Admin Order View</p>
             </a>
           </li>
-	  <!--<li class="nav-item active  ">
-            <a class="nav-link" href="#0">
-              <i class="material-icons">dashboard</i>
-              <p>Customer Order</p>
-            </a>
-          </li>
-	  <li class="nav-item active  ">
-            <a class="nav-link" href="#0">
-              <i class="material-icons">dashboard</i>
-              <p>FDS Manager</p>
-            </a>
-          </li>
-          <!-- your sidebar here -->
+			
         </ul>
       </div>
     </div>
@@ -89,6 +130,9 @@ $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres pa
                   <i class="material-icons">notifications</i> Notifications
                 </a>
               </li>
+			  <form action="/cs2102grp48fds/AdminUI/webpages/AdminLogin.php">
+                <button class="button">Logout</button>
+              </form>
               <!-- your navbar here -->
             </ul>
           </div>
@@ -164,8 +208,8 @@ Update completes SET riderid=
  END
  LIMIT 1) WHERE completeid='$completeID' AND riderid=13;
  
- Update delivery set riderid=(Select co.riderid FROM completes co,payment pa,orders o WHERE o.orderid=pa.orderid AND co.paymentid=pa.paymentid AND co.completeid='$completeID');
- 
+ Update delivery set riderid=(Select co.riderid FROM completes co,payment pa,orders o WHERE o.orderid=pa.orderid AND co.paymentid=pa.paymentid AND co.completeid='$completeID') WHERE deliveryid='$completeID';
+ Update customers set accumulatedpoints = (accumulatedpoints+(SELECT pa.paymentamount FROM completes co, payment pa WHERE co.paymentid=pa.paymentid AND co.completeid='$completeID')) from completes co where customers.customerid = co.customerid;
  commit;
 ");
 if (!$result) {
