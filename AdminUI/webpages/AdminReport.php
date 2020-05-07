@@ -26,47 +26,88 @@ $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres pa
                 Tip 2: you can also add an image using data-image tag
                 -->
                 <div class="logo">
-                    <a href="http://www.creative-tim.com" class="simple-text logo-mini">
-                        CT
-                    </a>
-                    <a href="http://www.creative-tim.com" class="simple-text logo-normal">
-                        Creative Tim
-                    </a>
-                </div>
+        <a class="simple-text logo-mini">
+          Admin Menu List
+        </a>
+      </div>
                 <div class="sidebar-wrapper">
-                    <ul class="nav">
-                        <li class="nav-item active  ">
-                            <a class="nav-link" href="#0">
-                                <i class="material-icons">dashboard</i>
-                                <p>Admin Report</p>
-                            </a>
-                        </li>
-                        <li class="nav-item active  ">
-                            <a class="nav-link" href="UpdateRidersInfo.php">
-                                <i class="material-icons">dashboard</i>
-                                <p>Update Rider Details</p>
-                            </a>
-                        </li>
-                        <li class="nav-item active  ">
-                            <a class="nav-link" href="AdminOrderView.php">
-                                <i class="material-icons">dashboard</i>
-                                <p>Admin Order View</p>
-                            </a>
-                        </li>
-                        <!--<li class="nav-item active  ">
-                            <a class="nav-link" href="#0">
-                                <i class="material-icons">dashboard</i>
-                                <p>Customer Order</p>
-                            </a>
-                        </li>
-                        <li class="nav-item active  ">
-                            <a class="nav-link" href="#0">
-                                <i class="material-icons">dashboard</i>
-                                <p>FDS Manager</p>
-                            </a>
-                        </li>
-                        <!-- your sidebar here -->
-                    </ul>
+                   <ul class="nav">
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/2_ViewAllUsers.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Users</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/6_viewAllRiders.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Riders</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/5_ViewAllFdsManager.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>FDS Manager</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/4_ViewAllRestaurantStaff.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Restaurant Staff</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllRestaurants.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Restaurants</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllFoods.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Foods</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllPromotions.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Promotions</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/7_ViewAllCustomerOrder.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Customer Order</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+            <a class="nav-link" href="AdminReport.php">
+              <i class="material-icons">dashboard</i>
+              <p>Admin Report</p>
+            </a>
+          </li>
+	  <li class="nav-item active  ">
+            <a class="nav-link" href="UpdateRidersInfo.php">
+              <i class="material-icons">dashboard</i>
+              <p>Update Rider Details</p>
+            </a>
+          </li>
+	  <li class="nav-item active  ">
+            <a class="nav-link" href="AdminOrderView.php">
+              <i class="material-icons">dashboard</i>
+              <p>Admin Order View</p>
+            </a>
+          </li>
+			
+        </ul>
                 </div>
             </div>
             <div class="main-panel">
@@ -89,6 +130,9 @@ $link = pg_connect("host=localhost port=5432 dbname=cs2102fds48 user=postgres pa
                                         <i class="material-icons">notifications</i> Notifications
                                     </a>
                                 </li>
+								<form action="/cs2102grp48fds/AdminUI/webpages/AdminLogin.php">
+                <button class="button">Logout</button>
+              </form>
                                 <!-- your navbar here -->
                             </ul>
                         </div>
@@ -182,7 +226,7 @@ END as TotalMonthSalary,
 (SELECT DISTINCT COUNT(c3.ratingsfordelivery) FROM completes c3 WHERE c3.riderId = r1.riderId AND EXTRACT(MONTH FROM c3.completedDateTime)=EXTRACT(MONTH FROM o1.orderDateTime)) as NumberOfRating,
 (SELECT DISTINCT ROUND(AVG(c4.ratingsfordelivery)) FROM completes c4 WHERE c4.riderId = r1.riderId AND EXTRACT(MONTH FROM c4.completedDateTime)=EXTRACT(MONTH FROM o1.orderDateTime)) as AverageRating
 FROM rider r1, completes c1, orders o1, payment p1 
-WHERE r1.riderId =  c1.riderId AND c1.paymentID = p1.paymentID AND p1.orderId = o1.orderId GROUP BY r1.riderId, o1.orderDateTime;
+WHERE r1.riderId =  c1.riderId AND c1.paymentID = p1.paymentID AND p1.orderId = o1.orderId AND r1.riderId<>13 GROUP BY r1.riderId, o1.orderDateTime;
 	");
                         echo"<h3><u>Rider's report</u></h3>";
 						echo"</br>";

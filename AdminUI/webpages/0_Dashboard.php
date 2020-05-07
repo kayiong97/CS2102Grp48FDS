@@ -56,43 +56,81 @@
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
-          <li class="nav-item active  ">
-            <a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/2_ViewAllUsers.php">
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/2_ViewAllUsers.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Users</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/6_viewAllRiders.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Riders</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/5_ViewAllFdsManager.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>FDS Manager</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/4_ViewAllRestaurantStaff.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Restaurant Staff</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllRestaurants.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Restaurants</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllFoods.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Foods</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllPromotions.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Promotions</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/7_ViewAllCustomerOrder.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Customer Order</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+            <a class="nav-link" href="AdminReport.php">
               <i class="material-icons">dashboard</i>
-              <p>All Users</p>
+              <p>Admin Report</p>
             </a>
           </li>
-    <li class="nav-item active  ">
-            <a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/6_viewAllRiders.php">
+	  <li class="nav-item active  ">
+            <a class="nav-link" href="UpdateRidersInfo.php">
               <i class="material-icons">dashboard</i>
-              <p>Riders</p>
+              <p>Update Rider Details</p>
             </a>
           </li>
-    <li class="nav-item active  ">
-            <a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/5_ViewAllFdsManager.php">
+	  <li class="nav-item active  ">
+            <a class="nav-link" href="AdminOrderView.php">
               <i class="material-icons">dashboard</i>
-              <p>FDS Manager</p>
+              <p>Admin Order View</p>
             </a>
           </li>
-        <li class="nav-item active  ">
-            <a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/4_ViewAllRestaurantStaff.php">
-              <i class="material-icons">dashboard</i>
-              <p>Restaurant Staff</p>
-            </a>
-          </li>
-    <li class="nav-item active  ">
-            <a class="nav-link" href="#0">
-              <i class="material-icons">dashboard</i>
-              <p>Restaurant</p>
-            </a>
-          </li>
-    <li class="nav-item active  ">
-            <a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/7_ViewAllCustomerOrder.php">
-              <i class="material-icons">dashboard</i>
-              <p>Customer Order</p>
-            </a>
-          </li>
-          <!-- your sidebar here -->
+			
         </ul>
       </div>
     </div>
@@ -117,7 +155,7 @@
                 </a>
               </li>
 
-              <form action="/cs2102grp48fds/AdminUI/webpages/3_UserLogin.php">
+              <form action="/cs2102grp48fds/AdminUI/webpages/AdminLogin.php">
                 <button class="button">Logout</button>
               </form> 
               <!-- your navbar here -->
@@ -129,7 +167,7 @@
       <div class="content">
         <div class="container-fluid">
           <!-- your content here -->
-          <h3>Welcome Melinde (Session)</h3>
+          <h3>Welcome!</h3>
           <h2>OUR MISSION IS TO PROVIDE AN UNFORGETTABLE EXPERIENCE</h2>
           <iframe src="http://free.timeanddate.com/clock/i77it3e3/n236/ftb/tt0/tw0/tm1/ts1/tb4" frameborder="0" width="1500" height="1000"></iframe>
 

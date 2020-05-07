@@ -405,6 +405,8 @@ INSERT INTO ftowns(riderid,workingdayid,shiftid,month,year) values(7,1,2,5,20);
 INSERT INTO ftowns(riderid,workingdayid,shiftid,month,year) values(8,2,4,5,20);
 INSERT INTO ftowns(riderid,workingdayid,shiftid,month,year) values(7,7,3,10,20);
 INSERT INTO ftowns(riderid,workingdayid,shiftid,month,year) values(8,6,2,10,20);
+INSERT INTO ftowns(riderid,workingdayid,shiftid,month,year) values(14,5,1,5,20);
+INSERT INTO ftowns(riderid,workingdayid,shiftid,month,year) values(14,1,2,5,20);
 INSERT into weeklyworkschedule(operatestarttime,operateendtime,breakstarttime,breakendtime,duration) values ('2020-05-04 10:00:00','2020-05-04 20:00:00','2020-05-04 14:00:00','2020-05-04 16:00:00','10');
 INSERT into weeklyworkschedule(operatestarttime,operateendtime,breakstarttime,breakendtime,duration) values ('2020-05-07 10:00:00','2020-05-07 20:00:00','2020-05-07 14:00:00','2020-05-07 16:00:00','10');
 INSERT into ptowns(riderid,weeklyworkschedule) values (5,1);
@@ -479,3 +481,24 @@ CREATE CONSTRAINT TRIGGER pttimecheck_trigger
 AFTER INSERT ON weeklyworkschedule
 DEFERRABLE INITIALLY IMMEDIATE
 FOR EACH ROW EXECUTE FUNCTION checkwws( );
+
+CREATE OR REPLACE FUNCTION checkShiftMin() RETURNS TRIGGER AS $$
+DECLARE 
+shift INTEGER;
+
+BEGIN
+	SELECT COUNT(*) FROM ftowns WHERE shiftid=NEW.shiftid
+	INTO shift;
+	
+	IF shift > 5 AND EXISTS(SELECT COUNT(*) FROM ftowns group by shiftid having count(*)<5) THEN 
+		RAISE exception 'Please fill other shift first. There is an empty shift';
+	END IF;
+	
+	RETURN NULL;
+END;
+$$ LANGUAGE plpgsql; 
+
+DROP TRIGGER IF EXISTS shiftmin_trigger ON ftowns CASCADE;
+CREATE TRIGGER shiftmin_trigger
+AFTER INSERT ON ftowns
+FOR EACH ROW EXECUTE FUNCTION checkShiftMin();

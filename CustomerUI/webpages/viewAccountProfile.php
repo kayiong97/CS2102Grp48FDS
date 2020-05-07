@@ -273,6 +273,9 @@
                                     if ($result)
                                     {
                                         echo "<script>alert('This credit card has been registered.')</script>";
+										echo "<script language='javascript'>";
+										echo 'window.location.replace("viewAccountProfile.php");';
+										echo "</script>";
                                     }
                                     else
                                     {

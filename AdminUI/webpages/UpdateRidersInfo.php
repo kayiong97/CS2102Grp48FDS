@@ -30,47 +30,88 @@ $_SESSION['error']=null;
                 Tip 2: you can also add an image using data-image tag
                 -->
                 <div class="logo">
-                    <a href="http://www.creative-tim.com" class="simple-text logo-mini">
-                        CT
-                    </a>
-                    <a href="http://www.creative-tim.com" class="simple-text logo-normal">
-                        Creative Tim
-                    </a>
-                </div>
+        <a class="simple-text logo-mini">
+          Admin Menu List
+        </a>
+      </div>
                 <div class="sidebar-wrapper">
                     <ul class="nav">
-                        <li class="nav-item active  ">
-                            <a class="nav-link" href="AdminReport.php">
-                                <i class="material-icons">dashboard</i>
-                                <p>Admin Report</p>
-                            </a>
-                        </li>
-                        <li class="nav-item active  ">
-                            <a class="nav-link" href="#0">
-                                <i class="material-icons">dashboard</i>
-                                <p>Update Rider Details</p>
-                            </a>
-                        </li>
-                        <li class="nav-item active  ">
-                            <a class="nav-link" href="AdminOrderView.php">
-                                <i class="material-icons">dashboard</i>
-                                <p>Admin Order View</p>
-                            </a>
-                        </li>
-                       <!-- <li class="nav-item active  ">
-                            <a class="nav-link" href="#0">
-                                <i class="material-icons">dashboard</i>
-                                <p>Customer Order</p>
-                            </a>
-                        </li>
-                        <li class="nav-item active  ">
-                            <a class="nav-link" href="#0">
-                                <i class="material-icons">dashboard</i>
-                                <p>FDS Manager</p>
-                            </a>
-                        </li>
-                        <!-- your sidebar here -->
-                    </ul>
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/2_ViewAllUsers.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Users</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/6_viewAllRiders.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Riders</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/5_ViewAllFdsManager.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>FDS Manager</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/4_ViewAllRestaurantStaff.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Restaurant Staff</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllRestaurants.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Restaurants</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllFoods.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Foods</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/JretrieveAllPromotions.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>All Promotions</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+				<a class="nav-link" href="/cs2102grp48fds/AdminUI/webpages/7_ViewAllCustomerOrder.php">
+				  <i class="material-icons">dashboard</i>
+				  <p>Customer Order</p>
+				</a>
+			</li>
+			
+			<li class="nav-item active  ">
+            <a class="nav-link" href="AdminReport.php">
+              <i class="material-icons">dashboard</i>
+              <p>Admin Report</p>
+            </a>
+          </li>
+	  <li class="nav-item active  ">
+            <a class="nav-link" href="UpdateRidersInfo.php">
+              <i class="material-icons">dashboard</i>
+              <p>Update Rider Details</p>
+            </a>
+          </li>
+	  <li class="nav-item active  ">
+            <a class="nav-link" href="AdminOrderView.php">
+              <i class="material-icons">dashboard</i>
+              <p>Admin Order View</p>
+            </a>
+          </li>
+			
+        </ul>
                 </div>
             </div>
             <div class="main-panel">
@@ -93,6 +134,9 @@ $_SESSION['error']=null;
                                         <i class="material-icons">notifications</i> Notifications
                                     </a>
                                 </li>
+								<form action="/cs2102grp48fds/AdminUI/webpages/AdminLogin.php">
+                <button class="button">Logout</button>
+              </form> 
                                 <!-- your navbar here -->
                             </ul>
                         </div>
@@ -204,7 +248,7 @@ $_SESSION['error']=null;
                                     echo "<table>";
                                     echo"<tr>";
                                     echo"<td align='center' width='200'><h4><b>Index</b></h4></td>";
-                                    echo"<td align='center' width='200'><h4><b>Rider Name</b></h4></td>";
+                                    echo"<td align='center' width='200'><h4><b>Rider NickName</b></h4></td>";
 									echo"<td align='center' width='200'><h4><b>Rider ID</b></h4></td>";
                                     echo"<td align='center' width='200'><h4><b>Operate Start Time</b></h4></td>";
                                     echo"<td align='center' width='200'><h4><b>Operate End Time</b></h4></td>";
@@ -266,7 +310,7 @@ $_SESSION['error']=null;
 									$result3 = pg_query($link, $sql3);
 									if ($result3) {
 										echo "Deleted successfully\n";
-										header("Refresh:0");
+									
 									} else {
 									echo pg_last_error($link);
 										}

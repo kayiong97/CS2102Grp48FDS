@@ -709,10 +709,10 @@ error_reporting(E_ERROR | E_PARSE);
 												}
 												
 												$loggedInCustomerId = $_SESSION['loggedInCustomerId'];
-												$res6 = pg_query("INSERT INTO Delivery (deliveryLocation, customerId, orderedTimestamp, orderId) VALUES('$sessGetDeliveryLocation', $loggedInCustomerId, (select orderDateTime FROM Orders WHERE orderId = (select max(orderId) FROM Orders)), (select max(orderId) FROM Orders))");
+												$res6 = pg_query("INSERT INTO Delivery (deliveryLocation, customerId, orderedTimestamp, orderId,riderid) VALUES('$sessGetDeliveryLocation', $loggedInCustomerId, (select orderDateTime FROM Orders WHERE orderId = (select max(orderId) FROM Orders)), (select max(orderId) FROM Orders),16)");
 												
 												$sessGetRestaurantId = $_SESSION['restaurantId'];
-												$res7 = pg_query("INSERT INTO Completes (restaurantId, customerId, paymentId, orderId) VALUES ($sessGetRestaurantId, $loggedInCustomerId, (select max(paymentId) from payment), (select max(orderId) from orders))");
+												$res7 = pg_query("INSERT INTO Completes (restaurantId, customerId, paymentId, orderId,riderid) VALUES ($sessGetRestaurantId, $loggedInCustomerId, (select max(paymentId) from payment), (select max(orderId) from orders),16)");
 												
 												$res8 = pg_query("UPDATE shoppingcart SET isCheckout = true WHERE customerId = $loggedInCustomerId");
 												$res10 = pg_query("DELETE FROM shoppingcart WHERE customerId = $loggedInCustomerId and isCheckout = true");
